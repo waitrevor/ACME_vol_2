@@ -13,8 +13,9 @@ def sphere_volume(r):
     """
     #value of pi
     pi = 3.14159
+
     #formula for volume
-    volume = pi * r
+    volume = 4 / 3 * pi * r
 
     return volume
 
@@ -24,8 +25,12 @@ def isolate(a, b, c, d, e):
     """ Print the arguments separated by spaces, but print 5 spaces on either
     side of b.
     """
-    
-    return 
+    #prints a,b,c with 5 spaces of separation
+    print(a, b, c, sep = '     ', end= ' ')
+
+    #prints the rest of the parameters with only 1 space
+    print(d, e, sep=' ')
+
 
 
 # Problem 4
@@ -39,7 +44,19 @@ def first_half(my_string):
         >>> first_half("ipython")
         'ipy'
     """
-    raise NotImplementedError("Problem 4 Incomplete")
+    #Length of the string
+    a = len(my_string)
+
+    #Find half of the length
+    b = a // 2
+
+    #Find half the string
+    half_string = my_string[:b]
+
+    #returns half the string
+    return half_string
+
+
 
 def backward(my_string):
     """ Return the reverse of the string 'my_string'.
@@ -50,7 +67,12 @@ def backward(my_string):
         >>> backward("ipython")
         'nohtypi'
     """
-    raise NotImplementedError("Problem 4 Incomplete")
+
+    #Reverses the string
+    backward_string = my_string[::-1]
+
+    #returns the backwards string
+    return backward_string
 
 
 # Problem 5
@@ -69,7 +91,26 @@ def list_ops():
         >>> list_ops()
         ['fox', 'hawk', 'dog', 'bearhunter']
     """
-    raise NotImplementedError("Problem 5 Incomplete")
+    my_list = ["bear", "ant", "cat", "dog"]
+
+    my_list.append("eagle")
+
+    my_list[2] = "fox"
+
+    my_list.pop(1)
+
+    my_list.sort(reverse=True)
+
+    a = my_list.index("eagle")
+    my_list[a] = "hawk"
+
+    string = "hunter"
+    b = len(my_list) - 1
+    temp = my_list[b]
+    my_list[b] = temp + string
+
+    return my_list
+    
 
 
 # Problem 6
@@ -106,5 +147,4 @@ if __name__ == "__main__":
 
 #Testing goes here
 
-sphere_volume(5)
-print(sphere_volume)
+print(list_ops())
