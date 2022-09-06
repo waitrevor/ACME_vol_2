@@ -178,6 +178,10 @@ def alt_harmonic(n):
     """ Return the partial sum of the first n terms of the alternating
     harmonic series, which approximates ln(2).
     """
+
+    L = [(-1) ** (i + 1) / (i) for i in range(1,n)]
+    ans = sum(L)
+    return ans
     
 
 # Problem 1 (write code below)
@@ -187,4 +191,4 @@ if __name__ == "__main__":
 
 #Testing goes here
 
-print(palindrome())
+print(alt_harmonic(500000))
