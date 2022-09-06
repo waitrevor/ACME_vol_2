@@ -179,7 +179,7 @@ def alt_harmonic(n):
     harmonic series, which approximates ln(2).
     """
 
-    L = [(-1) ** (i + 1) / (i) for i in range(1,n)]
+    L = [(-1) ** (i + 1) / (i) for i in range(1, n + 1)]
     ans = sum(L)
     return ans
     
