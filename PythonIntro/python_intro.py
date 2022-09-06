@@ -7,6 +7,9 @@
 
 
 # Problem 2
+from codecs import latin_1_decode
+
+
 def sphere_volume(r):
     """ Return the volume of the sphere of radius 'r'.
     Use 3.14159 for pi in your computation.
@@ -91,24 +94,32 @@ def list_ops():
         >>> list_ops()
         ['fox', 'hawk', 'dog', 'bearhunter']
     """
+    #Creates List
     my_list = ["bear", "ant", "cat", "dog"]
 
+    #Appends the List
     my_list.append("eagle")
 
+    #Changes index 2 to fox
     my_list[2] = "fox"
 
+    #pops index 1
     my_list.pop(1)
 
+    #puts the list into reverse aphabetical order
     my_list.sort(reverse=True)
 
+    #Replaces eagle with hawk
     a = my_list.index("eagle")
     my_list[a] = "hawk"
 
+    #adds hunter to the end of the last entry
     string = "hunter"
     b = len(my_list) - 1
     temp = my_list[b]
     my_list[b] = temp + string
 
+    #returns the list
     return my_list
     
 
@@ -123,7 +134,19 @@ def pig_latin(word):
         >>> pig_latin("banana")
         'ananabay'
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+    #finds if the first letter is a vowel
+    if (word[0] in "aeiou"):
+        #if the first letter is a vowel returns word + hay
+        return word + "hay"
+    #if the word doesn't begin with a vowel
+    else:
+        #takes the first letter and adds ay to the end
+        latin = word[0] + "ay"
+        #take the rest of the word without the first letter
+        pig_word = word[1:]
+        #puts the two parts of the word together to translate the word into pig latin
+        return pig_word + latin
+
 
 
 # Problem 7
@@ -131,14 +154,31 @@ def palindrome():
     """ Find and retun the largest panindromic number made from the product
     of two 3-digit numbers.
     """
-    raise NotImplementedError("Problem 7 Incomplete")
+    #defines my panidromic variable
+    n = 0
+
+    #for loops that iterate from 999 down to be multiplied together
+    for i in range(999, 99, -1):
+        for j in range(i, 99, -1):
+            #x is the product of i and j
+            x = i * j
+            #check to make sure that we are not finding larger palindromes
+            if x > n:
+                #creates a string so we can test using our backwards function to see if the number is a palindrome
+                number = str(x)
+                if number == backward(number):
+                    #sets n = to the palindrome
+                    n = i * j
+
+    #returns the largest palindrome
+    return n
 
 # Problem 8
 def alt_harmonic(n):
     """ Return the partial sum of the first n terms of the alternating
     harmonic series, which approximates ln(2).
     """
-    raise NotImplementedError("Problem 8 Incomplete")
+    
 
 # Problem 1 (write code below)
 if __name__ == "__main__":
@@ -147,4 +187,4 @@ if __name__ == "__main__":
 
 #Testing goes here
 
-print(list_ops())
+print(palindrome())
