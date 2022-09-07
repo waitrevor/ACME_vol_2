@@ -18,7 +18,7 @@ def sphere_volume(r):
     pi = 3.14159
 
     #formula for volume
-    volume = 4 / 3 * pi * r
+    volume = (4 / 3) * pi * (r**3)
 
     return volume
 
@@ -191,4 +191,4 @@ if __name__ == "__main__":
 
 #Testing goes here
 
-print(alt_harmonic(500000))
+print(sphere_volume(5))
