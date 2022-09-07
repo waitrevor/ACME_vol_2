@@ -178,9 +178,11 @@ def alt_harmonic(n):
     """ Return the partial sum of the first n terms of the alternating
     harmonic series, which approximates ln(2).
     """
-
+    #Finds each of the harmonic series 
     L = [(-1) ** (i + 1) / (i) for i in range(1, n + 1)]
+    #sums each term from the harmonic series
     ans = sum(L)
+    #returns the answer
     return ans
     
 
@@ -191,4 +193,4 @@ if __name__ == "__main__":
 
 #Testing goes here
 
-print(sphere_volume(5))
+#print(sphere_volume(5))
