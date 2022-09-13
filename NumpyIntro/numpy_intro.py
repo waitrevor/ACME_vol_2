@@ -55,7 +55,7 @@ def prob3():
     B = B + C
 
     #Returns the matrix product
-    return A @ B @ A
+    return (A @ B @ A).astype(np.int64)
 
 
 def prob4(A):
@@ -68,7 +68,7 @@ def prob4(A):
         array([0, 0, 3])
     """
     #Creates a copy of matrix A
-    B = A
+    B = np.copy(A)
 
     #Finds all the elements of B less than zero
     mask = B < 0
@@ -162,4 +162,4 @@ def prob7():
 
 #testing
 
-print(prob7())
+print(prob3())
