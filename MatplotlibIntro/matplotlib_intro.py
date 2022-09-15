@@ -1,10 +1,12 @@
 # matplotlib_intro.py
 """Python Essentials: Intro to Matplotlib.
-<Name>
-<Class>
-<Date>
+<Name> Trevor Wai
+<Class> Section 2
+<Date> 9/15/22
 """
 
+import numpy as np
+from matplotlib import pyplot as plt
 
 # Problem 1
 def var_of_means(n):
@@ -18,13 +20,23 @@ def var_of_means(n):
     Returns:
         (float) The variance of the means of each row.
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+
+    var = np.var(np.mean(np.random.normal(size=(n,n)), axis = 1))
+
+    return var
 
 def prob1():
     """ Create an array of the results of var_of_means() with inputs
     n = 100, 200, ..., 1000. Plot and show the resulting array.
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    n = 100
+    array = []
+    while n <= 1000:
+        array.append(var_of_means(n))
+        n += 100
+
+    plt.plot(array)
+    plt.show()
 
 
 # Problem 2
@@ -33,7 +45,14 @@ def prob2():
     [-2pi, 2pi]. Make sure the domain is refined enough to produce a figure
     with good resolution.
     """
-    raise NotImplementedError("Problem 2 Incomplete")
+    x = np.linspace(-2 * np.pi, 2 * np.pi, 100)
+    sinRange = np.sin(x)
+    cosRange = np.cos(x)
+    arctanRange = np.arctan(x)
+    plt.plot(x, sinRange)
+    plt.plot(x, cosRange)
+    plt.plot(x, arctanRange)
+    plt.show()
 
 
 # Problem 3
@@ -44,7 +63,16 @@ def prob3():
         3. Set the range of the x-axis to [-2,6] and the range of the
            y-axis to [-6,6].
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    x1 = np.linspace(-2, 1, 50, False)
+    x2 = np.linspace(6, 1, 50, False)
+    y1 = 1 / (x1 - 1)
+    y2 = 1 / (x2 - 1)
+    plt.plot(x1, y1, 'm--', linewidth = 4)
+    plt.plot(x2, y2, 'm--', linewidth = 4)
+    plt.xlim(-2, 6)
+    plt.ylim(-6, 6)
+    plt.show()
+
 
 
 # Problem 4
@@ -61,7 +89,30 @@ def prob4():
              2sin(x): blue dashed line.
             2sin(2x): magenta dotted line.
     """
-    raise NotImplementedError("Problem 4 Incomplete")
+    x = np.linspace(0, 2 * np.pi, 100)
+    plt.subplot(224)
+    #Top left
+    ax1 = plt.subplot(221)
+    ax1.plot(x, np.sin(x), 'g-')
+    ax1.set_xlim([0, 2 * np.pi])
+    ax1.set_ylim([-2, 2])
+    #Top right
+    ax2 = plt.subplot(222)
+    ax2.plot(x, np.sin(2 * x), 'r--')
+    ax2.set_xlim([0, 2 * np.pi])
+    ax2.set_ylim([-2, 2])
+    #Bottom left
+    ax3 = plt.subplot(223)
+    ax3.plot(x, 2 * np.sin(x), 'b--')
+    ax3.set_xlim([0, 2 * np.pi])
+    ax3.set_ylim([-2, 2])
+    #Bottom Right
+    ax4 = plt.subplot(224)
+    ax4.plot(x, 2 * np.sin(2 * x), 'm:')
+    ax4.set_xlim([0, 2 * np.pi])
+    ax4.set_ylim([-2, 2])
+    plt.tight_layout()
+    plt.show()
 
 
 # Problem 5
@@ -74,8 +125,22 @@ def prob5():
         2. A histogram of the hours of the day, with one bin per hour.
             Label and set the limits of the x-axis.
     """
-    raise NotImplementedError("Problem 5 Incomplete")
+    fars = np.load('FARS.npy')
+    x = np.reshape(fars[:,1:2], (1,-1)).tolist()[0]
+    y = np.reshape(fars[:,2:], (1,-1)).tolist()[0]
 
+    plt.subplot(122)
+
+    ax1 = plt.subplot(121)
+    ax1.plot(x, y, 'k,')
+    ax1.axis("equal")
+
+    ax2 = plt.subplot(122)
+    hours = np.reshape(fars[:,:1], (1,-1)).tolist()[0]
+    
+    ax2.hist(hours, bins=24)
+    plt.tight_layout()
+    plt.show()
 
 # Problem 6
 def prob6():
@@ -88,4 +153,33 @@ def prob6():
         3. Choose a non-default color scheme.
         4. Include a color scale bar for each subplot.
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+
+
+    x = np.linspace(-2 * np.pi, 2 * np.pi, 100)
+    y = np.linspace(-2 * np.pi, 2 * np.pi, 100)
+
+    X, Y = np.meshgrid(x, y)
+
+    g = (np.sin(X) * np.sin(Y)) / (X * Y)
+
+    plt.subplot(122)
+
+
+    plt.subplot(121)
+    plt.pcolormesh(X, Y, g, cmap="viridis", shading="auto")
+    plt.colorbar()
+    plt.xlim([-2 * np.pi, 2 * np.pi])
+    
+
+    plt.subplot(122)
+    plt.contour(X, Y, g, 10, cmap="coolwarm")
+    plt.colorbar()
+    plt.ylim([-2 * np.pi, 2 * np.pi])
+
+    plt.tight_layout()
+    plt.show()
+
+
+#testing
+
+prob6()
