@@ -5,6 +5,7 @@
 <Date> 9/15/22
 """
 
+from multiprocessing.pool import ApplyResult
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -35,7 +36,12 @@ def prob1():
         array.append(var_of_means(n))
         n += 100
 
+    
     plt.plot(array)
+    plt.title("This is the title.", fontsize=18)
+    plt.xlabel("The x axis")
+    plt.ylabel("The y axis")
+    plt.tight_layout()
     plt.show()
 
 
@@ -52,6 +58,10 @@ def prob2():
     plt.plot(x, sinRange)
     plt.plot(x, cosRange)
     plt.plot(x, arctanRange)
+    plt.title("This is the title.", fontsize=18)
+    plt.xlabel("The x axis")
+    plt.ylabel("The y axis")
+    plt.tight_layout()
     plt.show()
 
 
@@ -71,6 +81,10 @@ def prob3():
     plt.plot(x2, y2, 'm--', linewidth = 4)
     plt.xlim(-2, 6)
     plt.ylim(-6, 6)
+    plt.title("This is the title.", fontsize=18)
+    plt.xlabel("The x axis")
+    plt.ylabel("The y axis")
+    plt.tight_layout()
     plt.show()
 
 
@@ -96,21 +110,33 @@ def prob4():
     ax1.plot(x, np.sin(x), 'g-')
     ax1.set_xlim([0, 2 * np.pi])
     ax1.set_ylim([-2, 2])
+    plt.title("This is the Top Left.", fontsize=18)
+    plt.xlabel("The x axis")
+    plt.ylabel("The y axis")
     #Top right
     ax2 = plt.subplot(222)
     ax2.plot(x, np.sin(2 * x), 'r--')
     ax2.set_xlim([0, 2 * np.pi])
     ax2.set_ylim([-2, 2])
+    plt.title("This is the Top Right.", fontsize=18)
+    plt.xlabel("The x axis")
+    plt.ylabel("The y axis")
     #Bottom left
     ax3 = plt.subplot(223)
     ax3.plot(x, 2 * np.sin(x), 'b--')
     ax3.set_xlim([0, 2 * np.pi])
     ax3.set_ylim([-2, 2])
+    plt.title("This is the Bottom Left.", fontsize=18)
+    plt.xlabel("The x axis")
+    plt.ylabel("The y axis")
     #Bottom Right
     ax4 = plt.subplot(224)
     ax4.plot(x, 2 * np.sin(2 * x), 'm:')
     ax4.set_xlim([0, 2 * np.pi])
     ax4.set_ylim([-2, 2])
+    plt.title("This is the Bottom Right.", fontsize=18)
+    plt.xlabel("The x axis")
+    plt.ylabel("The y axis")
     plt.tight_layout()
     plt.show()
 
@@ -134,11 +160,17 @@ def prob5():
     ax1 = plt.subplot(121)
     ax1.plot(x, y, 'k,')
     ax1.axis("equal")
+    plt.title("This is a map.", fontsize=18)
+    plt.xlabel("The x axis")
+    plt.ylabel("The y axis")
 
     ax2 = plt.subplot(122)
     hours = np.reshape(fars[:,:1], (1,-1)).tolist()[0]
     
     ax2.hist(hours, bins=24)
+    plt.title("This is the Histogram.", fontsize=18)
+    plt.xlabel("The x axis")
+    plt.ylabel("The y axis")
     plt.tight_layout()
     plt.show()
 
@@ -169,12 +201,18 @@ def prob6():
     plt.pcolormesh(X, Y, g, cmap="viridis", shading="auto")
     plt.colorbar()
     plt.xlim([-2 * np.pi, 2 * np.pi])
+    plt.title("This is the Heat Map.", fontsize=18)
+    plt.xlabel("The x axis")
+    plt.ylabel("The y axis")
     
 
     plt.subplot(122)
     plt.contour(X, Y, g, 10, cmap="coolwarm")
     plt.colorbar()
     plt.ylim([-2 * np.pi, 2 * np.pi])
+    plt.title("This is the Contour Map.", fontsize=18)
+    plt.xlabel("The x axis")
+    plt.ylabel("The y axis")
 
     plt.tight_layout()
     plt.show()
