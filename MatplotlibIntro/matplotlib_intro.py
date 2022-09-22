@@ -21,7 +21,7 @@ def var_of_means(n):
     Returns:
         (float) The variance of the means of each row.
     """
-
+    #Returns the variance of the matrix
     var = np.var(np.mean(np.random.normal(size=(n,n)), axis = 1))
 
     return var
@@ -30,13 +30,16 @@ def prob1():
     """ Create an array of the results of var_of_means() with inputs
     n = 100, 200, ..., 1000. Plot and show the resulting array.
     """
+    #initializes variables
     n = 100
     array = []
+
+    #while loop that appends the array with values from var_of_means
     while n <= 1000:
         array.append(var_of_means(n))
         n += 100
 
-    
+    #Plots the array and gives a title and axis labelz
     plt.plot(array)
     plt.title("This is the title.", fontsize=18)
     plt.xlabel("The x axis")
@@ -51,16 +54,23 @@ def prob2():
     [-2pi, 2pi]. Make sure the domain is refined enough to produce a figure
     with good resolution.
     """
+
+    #Defines the points and bounds
     x = np.linspace(-2 * np.pi, 2 * np.pi, 100)
+
+    #calculates the values and plots the sin cos and arctan functions
     sinRange = np.sin(x)
     cosRange = np.cos(x)
     arctanRange = np.arctan(x)
     plt.plot(x, sinRange)
     plt.plot(x, cosRange)
     plt.plot(x, arctanRange)
+
+    #Gives title and labels axis
     plt.title("This is the title.", fontsize=18)
     plt.xlabel("The x axis")
     plt.ylabel("The y axis")
+    #Prints out the graph
     plt.tight_layout()
     plt.show()
 
@@ -73,14 +83,21 @@ def prob3():
         3. Set the range of the x-axis to [-2,6] and the range of the
            y-axis to [-6,6].
     """
+    #Defines the points and bounds
     x1 = np.linspace(-2, 1, 50, False)
     x2 = np.linspace(6, 1, 50, False)
+
+    #Plots the curve f(x) = 1/(x-1)
     y1 = 1 / (x1 - 1)
     y2 = 1 / (x2 - 1)
     plt.plot(x1, y1, 'm--', linewidth = 4)
     plt.plot(x2, y2, 'm--', linewidth = 4)
+    
+    #Sets the x-axis and y-axis bounds
     plt.xlim(-2, 6)
     plt.ylim(-6, 6)
+
+    #Gives title and labels the axis
     plt.title("This is the title.", fontsize=18)
     plt.xlabel("The x axis")
     plt.ylabel("The y axis")
@@ -103,9 +120,13 @@ def prob4():
              2sin(x): blue dashed line.
             2sin(2x): magenta dotted line.
     """
+    #Defines points and bounds
     x = np.linspace(0, 2 * np.pi, 100)
+
+    #Creates a graph with four subplots
     plt.subplot(224)
-    #Top left
+
+    #Plots the Top left
     ax1 = plt.subplot(221)
     ax1.plot(x, np.sin(x), 'g-')
     ax1.set_xlim([0, 2 * np.pi])
@@ -113,7 +134,8 @@ def prob4():
     plt.title("This is the Top Left.", fontsize=18)
     plt.xlabel("The x axis")
     plt.ylabel("The y axis")
-    #Top right
+
+    #Plots the Top right
     ax2 = plt.subplot(222)
     ax2.plot(x, np.sin(2 * x), 'r--')
     ax2.set_xlim([0, 2 * np.pi])
@@ -121,7 +143,8 @@ def prob4():
     plt.title("This is the Top Right.", fontsize=18)
     plt.xlabel("The x axis")
     plt.ylabel("The y axis")
-    #Bottom left
+
+    #Plots the Bottom left
     ax3 = plt.subplot(223)
     ax3.plot(x, 2 * np.sin(x), 'b--')
     ax3.set_xlim([0, 2 * np.pi])
@@ -129,7 +152,8 @@ def prob4():
     plt.title("This is the Bottom Left.", fontsize=18)
     plt.xlabel("The x axis")
     plt.ylabel("The y axis")
-    #Bottom Right
+
+    #Plots the Bottom Right
     ax4 = plt.subplot(224)
     ax4.plot(x, 2 * np.sin(2 * x), 'm:')
     ax4.set_xlim([0, 2 * np.pi])
@@ -137,6 +161,8 @@ def prob4():
     plt.title("This is the Bottom Right.", fontsize=18)
     plt.xlabel("The x axis")
     plt.ylabel("The y axis")
+
+    #Shows the Graph
     plt.tight_layout()
     plt.show()
 
@@ -151,26 +177,35 @@ def prob5():
         2. A histogram of the hours of the day, with one bin per hour.
             Label and set the limits of the x-axis.
     """
+    #Loads the data from FARS and adds them to a list
     fars = np.load('FARS.npy')
     x = np.reshape(fars[:,1:2], (1,-1)).tolist()[0]
     y = np.reshape(fars[:,2:], (1,-1)).tolist()[0]
 
+    #Creates a graph with two subplots
     plt.subplot(122)
 
+    #Plots the location of car accidents
     ax1 = plt.subplot(121)
     ax1.plot(x, y, 'k,')
     ax1.axis("equal")
+
+    #Title and label for car accidents
     plt.title("This is a map.", fontsize=18)
     plt.xlabel("The x axis")
     plt.ylabel("The y axis")
 
+    #Creates the Histogram
     ax2 = plt.subplot(122)
     hours = np.reshape(fars[:,:1], (1,-1)).tolist()[0]
-    
     ax2.hist(hours, bins=24)
+
+    #Title and labels for histogram
     plt.title("This is the Histogram.", fontsize=18)
     plt.xlabel("The x axis")
     plt.ylabel("The y axis")
+
+    #Shows graph
     plt.tight_layout()
     plt.show()
 
@@ -186,7 +221,7 @@ def prob6():
         4. Include a color scale bar for each subplot.
     """
 
-
+    #Creates a 2-D domain
     x = np.linspace(-2 * np.pi, 2 * np.pi, 100)
     y = np.linspace(-2 * np.pi, 2 * np.pi, 100)
 
@@ -194,30 +229,33 @@ def prob6():
 
     g = (np.sin(X) * np.sin(Y)) / (X * Y)
 
+    #Creates a graph with two subplots
     plt.subplot(122)
 
-
+    #Plots the Heat map
     plt.subplot(121)
     plt.pcolormesh(X, Y, g, cmap="viridis", shading="auto")
     plt.colorbar()
     plt.xlim([-2 * np.pi, 2 * np.pi])
+
+    #Titles and axis labels for the Heat map
     plt.title("This is the Heat Map.", fontsize=18)
     plt.xlabel("The x axis")
     plt.ylabel("The y axis")
     
-
+    #Plots the contour map
     plt.subplot(122)
     plt.contour(X, Y, g, 10, cmap="coolwarm")
     plt.colorbar()
     plt.ylim([-2 * np.pi, 2 * np.pi])
+
+    #Titles and axis labels for the contour map
     plt.title("This is the Contour Map.", fontsize=18)
     plt.xlabel("The x axis")
     plt.ylabel("The y axis")
 
+    #Shows the graph
     plt.tight_layout()
     plt.show()
 
 
-#testing
-
-prob6()
