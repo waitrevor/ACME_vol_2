@@ -1,8 +1,8 @@
 # specs.py
 """Python Essentials: Unit Testing.
-<Name>
-<Class>
-<Date>
+<Name> Trevor Wai
+<Class> Section 2
+<Date> 9/22/22
 """
 
 def add(a, b):
@@ -20,7 +20,8 @@ def divide(a, b):
 def smallest_factor(n):
     """Return the smallest prime factor of the positive integer n."""
     if n == 1: return 1
-    for i in range(2, int(n**.5)):
+    #fixed the range of the for loop
+    for i in range(2, int(n**.5)+1):
         if n % i == 0: return i
     return n
 
@@ -137,3 +138,6 @@ def is_set(a, b, c):
         False if a, b, and c do not form a set.
     """
     raise NotImplementedError("Problem 6 Incomplete")
+
+
+#testing
