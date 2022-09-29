@@ -14,6 +14,7 @@ def test_add():
     assert specs.add(1, 3) == 4, "failed on positive integers"
     assert specs.add(-5, -7) == -12, "failed on negative integers"
     assert specs.add(-6, 14) == 8
+    assert specs.Fraction(3, 1) + specs.Fraction(4,2) == specs.Fraction(5, 1)
 
 def test_divide():
     assert specs.divide(4,2) == 2, "integer division"
@@ -61,34 +62,86 @@ def set_up_fractions():
     frac_1_3 = specs.Fraction(1, 3)
     frac_1_2 = specs.Fraction(1, 2)
     frac_n2_3 = specs.Fraction(-2, 3)
-    return frac_1_3, frac_1_2, frac_n2_3
+    frac_3_1 = specs.Fraction(3,1)
+    return frac_1_3, frac_1_2, frac_n2_3, frac_3_1
 
 def test_fraction_init(set_up_fractions):
-    frac_1_3, frac_1_2, frac_n2_3 = set_up_fractions
+    frac_1_3, frac_1_2, frac_n2_3, frac_3_1 = set_up_fractions
+    with pytest.raises(ZeroDivisionError) as excinfo:
+        specs.Fraction(1, 0)
+    assert excinfo.value.args[0] == "denominator cannot be zero"
+    with pytest.raises(TypeError) as excinfo:
+        specs.Fraction("", "")
+    assert excinfo.value.args[0] == "numerator and denominator must be integers"
     assert frac_1_3.numer == 1
     assert frac_1_2.denom == 2
     assert frac_n2_3.numer == -2
     frac = specs.Fraction(30, 42)
     assert frac.numer == 5
     assert frac.denom == 7
+   
 
 def test_fraction_str(set_up_fractions):
-    frac_1_3, frac_1_2, frac_n2_3 = set_up_fractions
+    frac_1_3, frac_1_2, frac_n2_3, frac_3_1 = set_up_fractions
     assert str(frac_1_3) == "1/3"
     assert str(frac_1_2) == "1/2"
     assert str(frac_n2_3) == "-2/3"
+    assert str(frac_3_1) == "3"
 
 def test_fraction_float(set_up_fractions):
-    frac_1_3, frac_1_2, frac_n2_3 = set_up_fractions
+    frac_1_3, frac_1_2, frac_n2_3, frac_3_1 = set_up_fractions
     assert float(frac_1_3) == 1 / 3.
     assert float(frac_1_2) == .5
     assert float(frac_n2_3) == -2 / 3.
 
 def test_fraction_eq(set_up_fractions):
-    frac_1_3, frac_1_2, frac_n2_3 = set_up_fractions
+    frac_1_3, frac_1_2, frac_n2_3, frac_3_1 = set_up_fractions
     assert frac_1_2 == specs.Fraction(1, 2)
     assert frac_1_3 == specs.Fraction(2, 6)
     assert frac_n2_3 == specs.Fraction(8, -12)
+    assert 3.0 == frac_3_1
+
+def test_fraction_sub(set_up_fractions):
+    frac_1_3, frac_1_2, frac_n2_3, frac_3_1 = set_up_fractions
+    assert frac_1_2 - frac_1_3 == specs.Fraction(1, 6)
+
+def test_fraction_mul(set_up_fractions):
+    frac_1_3, frac_1_2, frac_n2_3, frac_3_1 = set_up_fractions
+    assert frac_1_2 * frac_1_3 == specs.Fraction(1, 6)
+
+def test_fraction_truediv(set_up_fractions):
+    frac_1_3, frac_1_2, frac_n2_3, frac_3_1 = set_up_fractions
+    assert frac_1_2 / frac_1_3 == specs.Fraction(3, 2)
+    with pytest.raises(ZeroDivisionError) as excinfo:
+        specs.Fraction(0, 3) / specs.Fraction(0, 4)
+    assert excinfo.value.args[0] == "cannot divide by zero"
 
 
 # Problem 5: Write test cases for Set.
+def test_count_sets():
+    assert specs.count_sets(["1022", "1122", "0100", "2021",
+                            "0010", "2201", "2111", "0020",
+                            "1102", "0210", "2110", "1020"]) == 6
+    with pytest.raises(ValueError) as excinfo:
+        specs.count_sets([""])
+    assert excinfo.value.args[0] == "there are not exactly 12 cards"
+    with pytest.raises(ValueError) as excinfo:
+        specs.count_sets(["1022", "1022", "0100", "2021",
+                            "0010", "2201", "2111", "0020",
+                            "1102", "0210", "2110", "1020"])
+    assert excinfo.value.args[0] == "the cards are not all unique"
+    with pytest.raises(ValueError) as excinfo:
+        specs.count_sets(["10220", "1022", "0100", "2021",
+                            "0010", "2201", "2111", "0020",
+                            "1102", "0210", "2110", "1020"])
+    assert excinfo.value.args[0] == "one or more cards does not have exactly 4 digits"
+    with pytest.raises(ValueError) as excinfo:
+        specs.count_sets(["1023", "1022", "0100", "2021",
+                            "0010", "2201", "2111", "0020",
+                            "1102", "0210", "2110", "1020"])
+    assert excinfo.value.args[0] == "one or more cards has a character other than 0, 1, or 2"
+
+def test_is_set():
+    assert specs.is_set("1022", "1122", "1020") == False
+    assert specs.is_set("0122", "1011", "2200") == True
+    assert specs.is_set("1122", "1011", "1200") == True

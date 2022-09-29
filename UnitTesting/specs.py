@@ -5,6 +5,11 @@
 <Date> 9/22/22
 """
 
+from math import comb
+from multiprocessing.sharedctypes import Value
+from itertools import combinations
+
+
 def add(a, b):
     """Add two numbers."""
     return a + b
@@ -94,10 +99,10 @@ class Fraction(object):
             return float(self) == other
 
     def __add__(self, other):
-        return Fraction(self.numer*other.numer + self.denom*other.denom,
+        return Fraction(self.numer*other.denom + self.denom*other.numer,
                                                         self.denom*other.denom)
     def __sub__(self, other):
-        return Fraction(self.numer*other.numer - self.denom*other.denom,
+        return Fraction(self.numer*other.denom - self.denom*other.numer,
                                                         self.denom*other.denom)
     def __mul__(self, other):
         return Fraction(self.numer*other.numer, self.denom*other.denom)
@@ -124,7 +129,32 @@ def count_sets(cards):
             - one or more cards does not have exactly 4 digits, or
             - one or more cards has a character other than 0, 1, or 2.
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+    numSets = 0
+    L = list(combinations(cards, 3))
+    for set in L:
+        if (is_set(set[0], set[1], set[2]) == True):
+            numSets += 1
+
+    if len(cards) != 12:
+            raise ValueError('there are not exactly 12 cards')
+    for i in range(0,12):
+        for j in range(0, 12):
+            if (i != j and cards[i] == cards[j]):
+                raise ValueError('the cards are not all unique')
+    for k in range(0,len(cards)):
+        if (len(cards[k]) != 4):
+            raise ValueError('one or more cards does not have exactly 4 digits')
+    for m in range(0, 12):
+        for n in range(0,4):
+            if(int(cards[m][n]) == 0 or int(cards[m][n]) == 1 or int(cards[m][n]) == 2):
+                continue
+            else:
+                raise ValueError('one or more cards has a character other than 0, 1, or 2')
+    
+
+    return numSets
+        
+    
 
 def is_set(a, b, c):
     """Determine if the cards a, b, and c constitute a set.
@@ -137,7 +167,21 @@ def is_set(a, b, c):
             and c are either the same or all different for i=1,2,3,4.
         False if a, b, and c do not form a set.
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+    isSet = 0
+    for i in range(0,4):
+        if(a[i] == b[i] == c[i]):
+            isSet += 1
+        if(a[i] != b[i] and a[i] != c[i] and b[i] != c[i]):
+            isSet +=1
+
+    if (isSet == 4):
+        return True
+    else:
+        return False
+            
 
 
 #testing
+print(count_sets(["1022", "1122", "0100", "2021",
+                    "0010", "2201", "2111", "0020",
+                    "1102", "0210", "2110", "1020"]))
