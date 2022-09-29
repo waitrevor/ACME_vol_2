@@ -99,9 +99,11 @@ class Fraction(object):
             return float(self) == other
 
     def __add__(self, other):
+        #Fixed the incorrect change of base
         return Fraction(self.numer*other.denom + self.denom*other.numer,
                                                         self.denom*other.denom)
     def __sub__(self, other):
+        #Fix the incorrect change of base
         return Fraction(self.numer*other.denom - self.denom*other.numer,
                                                         self.denom*other.denom)
     def __mul__(self, other):
@@ -129,21 +131,26 @@ def count_sets(cards):
             - one or more cards does not have exactly 4 digits, or
             - one or more cards has a character other than 0, 1, or 2.
     """
+    #Declares variables
     numSets = 0
     L = list(combinations(cards, 3))
+    #For loop to find how many sets are in the hand
     for set in L:
         if (is_set(set[0], set[1], set[2]) == True):
             numSets += 1
-
+    #Raises an error if the hand doesn't have 12 cards
     if len(cards) != 12:
             raise ValueError('there are not exactly 12 cards')
+    #Raises an error if not all the cards are unique
     for i in range(0,12):
         for j in range(0, 12):
             if (i != j and cards[i] == cards[j]):
                 raise ValueError('the cards are not all unique')
+    #Raises an error if one or more cards does not have exactly 4 digits
     for k in range(0,len(cards)):
         if (len(cards[k]) != 4):
             raise ValueError('one or more cards does not have exactly 4 digits')
+    #Raises an error if one or more cards has a character other than 0, 1, or 2
     for m in range(0, 12):
         for n in range(0,4):
             if(int(cards[m][n]) == 0 or int(cards[m][n]) == 1 or int(cards[m][n]) == 2):
@@ -151,7 +158,7 @@ def count_sets(cards):
             else:
                 raise ValueError('one or more cards has a character other than 0, 1, or 2')
     
-
+    #Returns the number of sets
     return numSets
         
     
@@ -167,13 +174,15 @@ def is_set(a, b, c):
             and c are either the same or all different for i=1,2,3,4.
         False if a, b, and c do not form a set.
     """
+    #Initializes a counter
     isSet = 0
+    #For loop to test if three numbers have the same or all different ith digit
     for i in range(0,4):
         if(a[i] == b[i] == c[i]):
             isSet += 1
         if(a[i] != b[i] and a[i] != c[i] and b[i] != c[i]):
             isSet +=1
-
+    #If the counter makes it to four then the three numbers are a set
     if (isSet == 4):
         return True
     else:
@@ -182,6 +191,3 @@ def is_set(a, b, c):
 
 
 #testing
-print(count_sets(["1022", "1122", "0100", "2021",
-                    "0010", "2201", "2111", "0020",
-                    "1102", "0210", "2110", "1020"]))
