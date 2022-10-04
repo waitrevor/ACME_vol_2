@@ -281,13 +281,11 @@ class LinkedList:
             node.prev = new_node
             
         
-
+        #Raises an error if the index is out of range
         elif index > len(self) or index < 0:
-
             raise IndexError('Index is out of range')
-
+        #Inserts a node anywhere else in the linkedlist
         else:
-
             new_node.next = node
             node.prev = new_node
             prev_node.next = new_node
@@ -299,26 +297,32 @@ class LinkedList:
 
 # Problem 6: Deque class.
 class Deque(LinkedList):
+    """Class Deque that inherits form LinkedList but behaves like a deque"""
 
     def pop(self):
+        """Pops the tail and returns value of the popped node"""
         node = self.tail
         node.prev.next = None
         node.prev = self.tail
         return node.value
 
     def popleft(self):
+        """Pops the head and returns the value of the popped node"""
         node = self.head
         node.next.prev = None
         node.next = self.head
         return node.value
 
     def appendleft(self, data):
+        """inserts data at the head of the deque"""
         self.insert(0, data)
     
     def remove(*args, **kwargs):
+        """Raises an error if the remove function was attempted to be used"""
         raise NotImplementedError('Use pop() or popleft() for removal')
     
     def insert(*args, **kwargs):
+        """Raises an error if the insert function was attempted to be used"""
         raise NotImplementedError('Use append() or appendleft() for insertion')
 
 # Problem 7
@@ -330,8 +334,10 @@ def prob7(infile, outfile):
         infile (str): the file to read from.
         outfile (str): the file to write to.
     """
+    #Opens the file and reads the lines
     with open(infile, 'r') as file:
         lines = file.readlines()
+    #Writes to an outfile that reverses the lines
     with open(outfile, 'w') as out:
         lines[-1] += '\n'
         out.write(lines[:-1].strip())
@@ -339,12 +345,3 @@ def prob7(infile, outfile):
 
 
 #Testing
-L = LinkedList()
-for x in [1,2,3,4]:
-    L.append(x)
-
-print(L)
-
-L.insert(4,5)
-
-print(L)
