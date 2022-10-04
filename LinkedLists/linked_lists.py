@@ -7,15 +7,27 @@
 
 
 # Problem 1
+from unittest.mock import NonCallableMagicMock
+
+
 class Node:
-    """A basic node class for storing data."""
+    """A basic node class for storing data of type int, float, or str."""
     def __init__(self, data):
-        """Store the data in the value attribute.
+        """Store the data in the value attribute of type int, float or string.
                 
         Raises:
             TypeError: if data is not of type int, float, or str.
         """
-        self.value = data
+        #Stores data if it is an int float or string otherwise raises an error
+        if type(data) is int:
+            self.value = data
+        elif type(data) is float:
+            self.value = data
+        elif type(data) is str:
+            self.value = data
+        else:
+            raise TypeError('Data is not of type int, float, or str.')
+
 
 
 class LinkedListNode(Node):
@@ -80,7 +92,25 @@ class LinkedList:
             >>> l.find('f')
             ValueError: <message>
         """
-        raise NotImplementedError("Problem 2 Incomplete")
+        #Assings the current node as the head
+        node = self.head
+
+        #Loops through the linked list to find the node
+        while (node is not self.tail):
+            #Tests to see if the value of the node is equal to the data
+            if node.value == data:
+                return node
+            else:
+                node = node.next
+        
+        #Catchs if the tail is the node else raises errors
+        if node.value == data:
+            return node
+        elif self.head == None:
+            raise ValueError('List is empty')
+        elif node == self.tail:
+            raise ValueError('Node not found')
+        
 
     # Problem 2
     def get(self, i):
@@ -101,7 +131,24 @@ class LinkedList:
             >>> l.get(5)
             IndexError: <message>
         """
-        raise NotImplementedError("Problem 2 Incomplete")
+        #Assings node to be the head
+        node = self.head
+        count = 0
+
+        #Loops through the linked list
+        while(node is not self.tail):
+            if count == i:
+                return node
+            #Updates the counter and the node
+            count += 1
+            node = node.next
+        
+        count +=1
+        #Raises an error if the input is out of range
+        if i < 0 or i >= count:
+            raise IndexError('i is negative or greater than or equal to the current number of nodes')
+        
+        return node
 
     # Problem 3
     def __len__(self):
@@ -118,7 +165,18 @@ class LinkedList:
             >>> len(l)
             4
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        node = self.head
+        count = 0
+
+        #Loops through the linked list
+        while(node is not self.tail):
+            #Updates the counter and the node
+            count += 1
+            node = node.next
+        #Updates the counter to so it has the number of nodes
+        count +=1
+
+        return count
 
     # Problem 3
     def __str__(self):
@@ -132,7 +190,19 @@ class LinkedList:
             >>> print(l1)               |   >>> print(l2)
             [1, 3, 5]                   |   ['a', 'b', 'c']
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        node = self.head
+        l = []
+        count = 0
+
+        while(node is not self.tail):
+            l.append(node.value)
+
+            #Updates the counter and the node
+            count += 1
+            node = node.next
+        #Updates the counter to so it has the number of nodes
+        l.append(self.tail.value)
+        return str(l)
 
     # Problem 4
     def remove(self, data):
@@ -150,7 +220,24 @@ class LinkedList:
             >>> print(l1)               |   >>> l3.remove(10)
             ['e', 'o']                  |   ValueError: <message>
         """
-        raise NotImplementedError("Problem 4 Incomplete")
+        #Raises an error if the list is empty
+        if self.head == None:
+            raise ValueError('List is empty')
+        #Finds the target node
+        target = self.find(data)
+        #If the node is at the front then deletes the head
+        if target is self.head:
+            self.head = target.next
+            self.head.prev = None
+        #Ifthe node is at the tail then deletes the tail
+        elif target is self.tail:
+            self.tail = target.prev
+            self.tail.next = None
+        else:
+            #Makes the node in front of target point to the node after target and vise versa
+            target.prev.next = target.next
+            target.next.prev = target.prev
+        
 
     # Problem 5
     def insert(self, index, data):
@@ -174,11 +261,65 @@ class LinkedList:
             >>> print(l1)               |
             ['a', 'b', 'c', 'd']        |
         """
-        raise NotImplementedError("Problem 5 Incomplete")
+
+        
+        #Checks to see if the index is at the end of the list
+        if index == len(self):
+
+            self.append(data)
+            return
+        #If the index isn't at the end then declares new nodes
+        node = self.get(index)
+        prev_node = node.prev
+        new_node = LinkedListNode(data)
+        
+        #If the data is being added at the head
+        if index == 0:
+            #Adds the data to the head
+            self.head = new_node
+            new_node.next = node
+            node.prev = new_node
+            
+        
+
+        elif index > len(self) or index < 0:
+
+            raise IndexError('Index is out of range')
+
+        else:
+
+            new_node.next = node
+            node.prev = new_node
+            prev_node.next = new_node
+            new_node.prev = prev_node
+
+            
+
 
 
 # Problem 6: Deque class.
+class Deque(LinkedList):
 
+    def pop(self):
+        node = self.tail
+        node.prev.next = None
+        node.prev = self.tail
+        return node.value
+
+    def popleft(self):
+        node = self.head
+        node.next.prev = None
+        node.next = self.head
+        return node.value
+
+    def appendleft(self, data):
+        self.insert(0, data)
+    
+    def remove(*args, **kwargs):
+        raise NotImplementedError('Use pop() or popleft() for removal')
+    
+    def insert(*args, **kwargs):
+        raise NotImplementedError('Use append() or appendleft() for insertion')
 
 # Problem 7
 def prob7(infile, outfile):
@@ -189,4 +330,21 @@ def prob7(infile, outfile):
         infile (str): the file to read from.
         outfile (str): the file to write to.
     """
-    raise NotImplementedError("Problem 7 Incomplete")
+    with open(infile, 'r') as file:
+        lines = file.readlines()
+    with open(outfile, 'w') as out:
+        lines[-1] += '\n'
+        out.write(lines[:-1].strip())
+
+
+
+#Testing
+L = LinkedList()
+for x in [1,2,3,4]:
+    L.append(x)
+
+print(L)
+
+L.insert(4,5)
+
+print(L)
