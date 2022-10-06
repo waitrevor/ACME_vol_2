@@ -4,3 +4,61 @@ linked_lists.py has not been modified yet
 
 -------------------------------------------------------------------------------
 
+10/06/22 09:31
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 2 (5 points):
+LinkedList.find() failed to raise a ValueError (got an AttributeError instead)
+AttributeError: 'NoneType' object has no attribute 'value'
+
+Problem 3 (5 points):
+LinkedList.__len__() failed on list []
+	Correct response: 0
+	Student response: 1
+AttributeError: 'NoneType' object has no attribute 'value'
+
+Problem 4 (7 points):
+AttributeError while removing 12: 'NoneType' object has no attribute 'prev'
+	Previous list:    [12]
+AttributeError while removing 11: 'NoneType' object has no attribute 'prev'
+	Previous list:    [11]
+Score += 5
+
+Problem 5 (8 points):
+Score += 8
+
+Problem 6 (10 points):
+AttributeError while appendlefting 53: 'NoneType' object has no attribute 'prev'
+	Previous deque:   []
+ValueError while poping: Node not found
+	Previous deque:   [21, 61, 85, 38, 73, 86, 51]
+ValueError while poplefting: Node not found
+	Previous deque:   [83, 4, 84, 88, 26, 19]
+Score += 4
+
+Problem 7 (5 points):
+prob7() failed
+	Original file:
+dosage
+overacting
+prolix
+detest
+chiller
+trusties
+oar
+dribble
+accordingly
+hens
+	Correct response: '\nhens\naccordingly\ndribble\noar\ntrusties\nchiller\ndetest\nprolix\noveracting\ndosage'
+	Student response: '\nhens\n\naccordingly\ndribble\noar\ntrusties\nchiller\ndetest\nprolix\noveracting\ndosage'
+Score += 0
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 27/50 = 54.0%
+
+-------------------------------------------------------------------------------
+
