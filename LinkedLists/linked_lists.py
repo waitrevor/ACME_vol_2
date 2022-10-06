@@ -7,6 +7,7 @@
 
 
 # Problem 1
+from tkinter import N
 from unittest.mock import NonCallableMagicMock
 
 
@@ -262,7 +263,6 @@ class LinkedList:
             ['a', 'b', 'c', 'd']        |
         """
 
-        
         #Checks to see if the index is at the end of the list
         if index == len(self):
 
@@ -291,6 +291,7 @@ class LinkedList:
             prev_node.next = new_node
             new_node.prev = prev_node
 
+
             
 
 
@@ -301,21 +302,29 @@ class Deque(LinkedList):
 
     def pop(self):
         """Pops the tail and returns value of the popped node"""
-        node = self.tail
-        node.prev.next = None
-        node.prev = self.tail
-        return node.value
+        #Raises an error if the list is empty
+        if self.head == None:
+            raise ValueError('List is empty')
+        #Pops the tail
+        else:
+            node = self.tail
+            LinkedList.remove(self, node)
+            return node.value
 
     def popleft(self):
         """Pops the head and returns the value of the popped node"""
-        node = self.head
-        node.next.prev = None
-        node.next = self.head
+        #Raises an error if the list is empty
+        if self.head == None:
+            raise ValueError('List is empty')
+        #Pops the head
+        else:
+            node = self.head
+            LinkedList.remove(self, node)
         return node.value
 
     def appendleft(self, data):
         """inserts data at the head of the deque"""
-        self.insert(0, data)
+        LinkedList.insert(self, 0, data)
     
     def remove(*args, **kwargs):
         """Raises an error if the remove function was attempted to be used"""
@@ -340,8 +349,18 @@ def prob7(infile, outfile):
     #Writes to an outfile that reverses the lines
     with open(outfile, 'w') as out:
         lines[-1] += '\n'
-        out.write(lines[:-1].strip())
+        new_list = lines[::-1]
+        output = ''.join(new_list)
+        out.write(output.strip())
 
 
 
 #Testing
+# my_list = LinkedList()
+# for i in range(10):
+#     my_list.append(i)
+
+# print(my_list)
+# my_list.insert(0,9)
+# print(my_list)
+prob7('english.txt', 'outfile.txt')
