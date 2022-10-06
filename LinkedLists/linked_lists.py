@@ -1,8 +1,8 @@
 # linked_lists.py
 """Volume 2: Linked Lists.
-<Name>
-<Class>
-<Date>
+<Name> Trevor Wai
+<Class> Section 2
+<Date> 10/6/22
 """
 
 
