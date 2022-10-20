@@ -1,13 +1,18 @@
 # binary_trees.py
 """Volume 2: Binary Trees.
-<Name>
-<Class>
-<Date>
+<Name> Trevor Wai
+<Class> Section 2
+<Date> 10/18/22
 """
 
 # These imports are used in BST.draw().
 import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
+from matplotlib import pyplot as plt
+from time import perf_counter
+from random import sample
+import numpy as np
+
 
 
 class SinglyLinkedListNode:
@@ -53,7 +58,19 @@ class SinglyLinkedList:
         Returns:
             (SinglyLinkedListNode): the node containing the data.
         """
-        raise NotImplementedError("Problem 1 Incomplete")
+        #Function to traverse the tree
+        def _traverse(current):
+            #If the list is empty or if no such node exists
+            if current is None:
+                raise ValueError("No such node in the list")
+            #Returns the node with same value as the given data
+            if current.value == data:
+                return current
+            #Recursively searches the tree if the node is not yet found
+            else:
+                return _traverse(current.next)
+        
+        return _traverse(self.head)
 
 
 class BSTNode:
@@ -118,7 +135,36 @@ class BST:
             [1, 5, 7]                           |                  (8)
             [8]                                 |
         """
-        raise NotImplementedError("Problem 2 Incomplete")
+        #If the list is empty
+        if self.root == None:
+                self.root = BSTNode(data)
+                return
+        
+        #Function to traverse the tree
+        def _traverse(current):
+
+            #If the data already is in the tree
+            if data == current.value:
+                raise ValueError("No duplicate data allowed")
+
+            #If the data is less than the current go left
+            elif data < current.value:
+                #If the left doesn't have any more nodes
+                if current.left is None:
+                    current.left = BSTNode(data)
+                    current.left.prev = current
+                else:
+                    return _traverse(current.left)
+            #If the data is greater than the current go right
+            elif data > current.value:
+                #If the right doesn't have any more nodes
+                if current.right is None:
+                    current.right = BSTNode(data)
+                    current.right.prev = current
+                else:
+                    return _traverse(current.right)
+
+        return _traverse(self.root)
 
     # Problem 3
     def remove(self, data):
@@ -151,7 +197,86 @@ class BST:
             >>> print(t2)                       | >>> t4.remove(5)
             []                                  | ValueError: <message>
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        target = self.find(data)
+
+        #Target is a leaf
+        if target.left is None and target.right is None:
+
+            #The target is the root with no children
+            if target is self.root:
+                self.root = None
+                return
+
+            #Target is left child
+            elif target.prev.left is target:
+                target.prev.left = None
+
+            #Target is right child
+            else:
+                target.prev.right = None
+
+        #Target has two children
+        elif target.left is not None and target.right is not None:
+            pred = target.left
+
+            #Finds the right most left child
+            while pred.right is not None:
+                pred = pred.right
+            pred_val = pred.value
+
+            #Removes the inorder predecessor and replaces the target
+            self.remove(pred_val)
+            target.value = pred_val
+        
+        #Target has one child
+        elif bool(target.left is None) != bool(target.right is None):
+
+            #Target has a left child
+            if target.left is not None:
+                child = target.left
+
+                #If the target is the root
+                if target is self.root:
+                    self.root = child
+                    child.prev = None
+
+                #If the target is the left child
+                elif target is target.prev.left:
+                    parent = target.prev
+                    parent.left = child
+                    child.prev = parent
+
+                #If the target is the right child
+                elif target is target.prev.right:
+                    parent = target.prev
+                    parent.right = child
+                    child.prev = parent
+
+            #Target has a right child
+            elif target.right is not None:
+                child = target.right
+
+                #If the target is the root
+                if target is self.root:
+                    self.root = child
+                    child.prev = None
+
+                #If the target is the left child
+                elif target is target.prev.left:
+                    parent = target.prev
+                    parent.left = child
+                    child.prev = parent
+
+                #If the target is the right child
+                elif target is target.prev.right:
+                    parent = target.prev
+                    parent.right = child
+                    child.prev = parent
+
+                
+
+
+
 
     def __str__(self):
         """String representation: a hierarchical view of the BST.
@@ -317,4 +442,95 @@ def prob4():
     structure. Plot the number of elements in the structure versus the build
     and search times. Use log scales where appropriate.
     """
-    raise NotImplementedError("Problem 4 Incomplete")
+    with open("english.txt") as inFile:
+        lines = inFile.readlines()
+
+    #Initializes variables
+    domain = 2**np.arange(3,11)
+
+    makeList = []
+    makeBST = []
+    makeAVL = []
+
+    readList = []
+    readBST = []
+    readAVL = []
+
+    #Loops through the domain
+    for n in domain:
+
+        #Initializes variables
+        theList = SinglyLinkedList()
+        theBST = BST()
+        theAVL = AVL()
+        theWords = sample(lines, 5)
+
+        #Records how long it takes to make the Linked List
+        start = perf_counter()
+        for word in theWords:
+            theList.append(word)
+        end = perf_counter() - start
+        makeList.append(end)
+
+        #Records how long it takes to make the BST
+        start = perf_counter()
+        for word in theWords:
+            theBST.insert(word)
+        end = perf_counter() - start
+        makeBST.append(end)
+
+        #Records how long it takes to make the AVL
+        start = perf_counter()
+        for word in theWords:
+            theAVL.insert(word)
+        end = perf_counter() - start
+        makeAVL.append(end)
+
+        #Pick 5 words
+        subset = []
+        for k in range(5):
+            subset.append(np.random.choice(list(theWords)))
+
+        #Records how long it takes to search the Linked List
+        start = perf_counter()
+        for word in subset:
+            theList.iterative_find(word)
+        end = perf_counter() - start
+        readList.append(end)
+
+        #Records how long it takes to search the BST
+        start = perf_counter()
+        for word in subset:
+            theBST.find(word)
+        end = perf_counter() - start
+        readBST.append(end)
+
+        #Records how long it takes to search the AVL
+        start = perf_counter()
+        for word in subset:
+            theAVL.find(word)
+        end = perf_counter() - start
+        readAVL.append(end)
+
+    #Plots how long it takes to make the linked list, bst and avl
+    plt.subplot(121)
+    plt.plot(domain, makeList)
+    plt.plot(domain, makeBST)
+    plt.plot(domain, makeAVL)
+    plt.title("Making the List, BST, AVL")
+    plt.xlabel("Number of elements")
+    plt.ylabel("Time")
+    plt.legend(["LL", "BST", "AVL"])
+
+    #Plots how long it takes to seach the linked list, bst, avl
+    plt.subplot(122)
+    plt.loglog(domain, readList)
+    plt.loglog(domain, readBST)
+    plt.loglog(domain, readAVL)
+    plt.title("Read the List, BST, AVL")
+    plt.xlabel("Number of elements")
+    plt.ylabel("Time")
+    plt.legend(["LL", "BST", "AVL"])
+
+    plt.tight_layout()
+    plt.show()
