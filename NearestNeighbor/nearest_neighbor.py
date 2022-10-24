@@ -248,9 +248,3 @@ def prob6(n_neighbors, filename="mnist_subset.npz"):
             correct += 1
     
     return correct / len(y_test)
-
-
-
-#Testing
-print(prob6(10))
-
