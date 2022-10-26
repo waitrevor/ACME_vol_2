@@ -8,7 +8,7 @@
 import numpy as np
 from scipy import linalg as la
 from scipy.spatial import KDTree
-from scipy.stats import mode
+from statistics import mode
 
 
 # Problem 1
@@ -216,7 +216,7 @@ class KNeighborsClassifier:
     def predict(self, z):
         """Finds the nearest neighbor to z and returns the most common label"""
         min_distance, index = self.tree.query(z, self.num)
-        return mode([self.labels[i] for i in index], keepdims=False)[0]
+        return mode([self.labels[i] for i in index])
 
 # Problem 6
 def prob6(n_neighbors, filename="mnist_subset.npz"):
@@ -234,9 +234,9 @@ def prob6(n_neighbors, filename="mnist_subset.npz"):
         (float): the classification accuracy.
     """
     data = np.load("mnist_subset.npz")
-    X_train = data["X_train"].astype(np.float)
+    X_train = data["X_train"].astype(float)
     y_train = data["y_train"]
-    X_test = data["X_test"].astype(np.float)
+    X_test = data["X_test"].astype(float)
     y_test = data["y_test"]
 
     classifier = KNeighborsClassifier(n_neighbors)
