@@ -8,7 +8,7 @@
 import numpy as np
 from scipy import linalg as la
 from scipy.spatial import KDTree
-from statistics import mode
+from scipy.stats import mode
 
 
 # Problem 1
@@ -126,6 +126,7 @@ class KDT:
 
             #If the data is less then the current value go left
             if data[piv] < current.value[piv]:
+                #If there is no left node make the data the left node
                 if current.left is None:
                     current.left = KDTNode(data)
                     current.left.pivot = (piv + 1) % self.k
@@ -133,6 +134,7 @@ class KDT:
                 return _traverse(current.left)
             #If the data is greater than the current go right
             else:
+                #If there is no right node make the data the right node
                 if current.right is None:
                     current.right = KDTNode(data)
                     current.right.pivot = (piv + 1) % self.k
@@ -156,20 +158,28 @@ class KDT:
             ((k,) ndarray) the value in the tree that is nearest to z.
             (float) The Euclidean distance from the nearest neighbor to z.
         """
+        #Recursive Search
         def _search(current, nearest, d):
+            #Base Case: Dead end
             if current is None:
                 return nearest, d
+            #Initialize Variables
             x = current.value
             i = current.pivot
+            #Check if current is closer to z then nearest
             if la.norm(x - z) < d:
                 nearest = current
                 d = la.norm(x - z)
+            #Search to the left
             if z[i] < x[i]:
                 nearest, d = _search(current.left, nearest, d)
+                #Search to the right if needed
                 if z[i] + d >= x[i]:
                     nearest, d = _search(current.right, nearest, d)
+            #Search to the right
             else:
                 nearest, d = _search(current.right, nearest, d)
+                #Search to the left if needed
                 if z[i] - d <= x[i]:
                     nearest, d = _search(current.left, nearest, d)
             return nearest, d
@@ -233,18 +243,21 @@ def prob6(n_neighbors, filename="mnist_subset.npz"):
     Returns:
         (float): the classification accuracy.
     """
-    data = np.load("mnist_subset.npz")
-    X_train = data["X_train"].astype(float)
-    y_train = data["y_train"]
-    X_test = data["X_test"].astype(float)
-    y_test = data["y_test"]
+    data = np.load(filename)
+    X_train = data["X_train"].astype(float)     #training data
+    y_train = data["y_train"]                   #training labels
+    X_test = data["X_test"].astype(float)       #Test Data
+    y_test = data["y_test"]                     #Test Labels
 
+    #Loads the classifier from problem 5
     classifier = KNeighborsClassifier(n_neighbors)
     classifier.fit(X_train, y_train)
     correct = 0
+    #Uses classifier to predict the labels of each x test
     for i in range(len(X_test)):
-        result = classifier.predict(X_test[i])
+        result = classifier.predict(X_test[i])[0]
         if result == y_test[i]:
             correct += 1
     
     return correct / len(y_test)
+
