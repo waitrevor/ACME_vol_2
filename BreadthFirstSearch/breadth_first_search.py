@@ -223,6 +223,3 @@ class MovieGraph:
         plt.show()
 
 
-#Testing
-graph = MovieGraph()
-graph.average_number('Will Smith')
