@@ -1,10 +1,12 @@
 # breadth_first_search.py
 """Volume 2: Breadth-First Search.
-<Name>
-<Class>
-<Date>
+<Name> Trevor
+<Class> Section 2
+<Date> 10/27/22
 """
-
+from collections import deque
+import networkx as nx
+from matplotlib import pyplot as plt
 
 # Problems 1-3
 class Graph:
@@ -31,7 +33,9 @@ class Graph:
         Parameters:
             n: the label for the new node.
         """
-        raise NotImplementedError("Problem 1 Incomplete")
+        #Adds node n into the set if not already present
+        if n not in set(self.d.keys()):
+            self.d[n] = set()
 
     # Problem 1
     def add_edge(self, u, v):
@@ -42,7 +46,13 @@ class Graph:
             u: a node label.
             v: a node label.
         """
-        raise NotImplementedError("Problem 1 Incomplete")
+        #Adds u and v in the graph if they are not already present
+        self.add_node(u)
+        self.add_node(v)
+        self.d[u].add(v)
+        self.d[v].add(u)
+
+
 
     # Problem 1
     def remove_node(self, n):
@@ -54,7 +64,14 @@ class Graph:
         Raises:
             KeyError: if n is not in the graph.
         """
-        raise NotImplementedError("Problem 1 Incomplete")
+        self.d.pop(n)
+
+        for i in self.d.keys():
+            try:
+                self.d[i].remove(n)
+            except KeyError:
+                pass
+
 
     # Problem 1
     def remove_edge(self, u, v):
@@ -68,7 +85,9 @@ class Graph:
             KeyError: if u or v are not in the graph, or if there is no
                 edge between u and v.
         """
-        raise NotImplementedError("Problem 1 Incomplete")
+        self.d[u].remove(v)
+        self.d[v].remove(u)
+
 
     # Problem 2
     def traverse(self, source):
@@ -85,7 +104,21 @@ class Graph:
         Raises:
             KeyError: if the source node is not in the graph.
         """
-        raise NotImplementedError("Problem 2 Incomplete")
+        V = []
+        Q = deque()
+        M = set()
+        Q.append(source)
+        M.add(source)
+
+        while len(Q) != 0:
+            node = Q.popleft()
+            V.append(node)
+            for i in self.d[node]:
+                if i not in M:
+                    M.add(i)
+                    Q.append(i)
+            
+        return V
 
     # Problem 3
     def shortest_path(self, source, target):
@@ -104,7 +137,20 @@ class Graph:
         Raises:
             KeyError: if the source or target nodes are not in the graph.
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        Q = deque()
+        M = set()
+        Q.append((source, list(source)))
+        M.add(source)
+
+        while len(Q) != 0:
+            node, path = Q.popleft()
+            if node is target:
+                return path
+            for i in self.d[node]:
+                if i not in M:
+                    M.add(i)
+                    Q.append(i, path + list(i))
+            
 
 
 # Problems 4-6
@@ -128,7 +174,24 @@ class MovieGraph:
         Any '/' characters in movie titles have been replaced with the
         vertical pipe character | (for example, Frost|Nixon (2008)).
         """
-        raise NotImplementedError("Problem 4 Incomplete")
+        self.title = set()
+        self.actor = set()
+        self.graph = nx.Graph()
+
+        with open(filename, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+
+            for line in lines:
+                line = line.strip().split('/')
+                self.graph.add_nodes_from(line)
+                edge = []
+
+                for name in line[1:]:
+                    edge.append((line[0],name))
+                    self.actor.add(name)
+
+                self.graph.add_edges_from(edge)
+                self.title.add(line[0])
 
     # Problem 5
     def path_to_actor(self, source, target):
@@ -139,7 +202,7 @@ class MovieGraph:
             (list): a shortest path from source to target, including endpoints and movies.
             (int): the number of steps from source to target, excluding movies.
         """
-        raise NotImplementedError("Problem 5 Incomplete")
+        return nx.shortest_path(self.graph, source, target), nx.shortest_path_length(self.graph, source, target) // 2
 
     # Problem 6
     def average_number(self, target):
@@ -150,4 +213,16 @@ class MovieGraph:
         Returns:
             (float): the average path length from actor to target.
         """
-        raise NotImplementedError("Problem 6 Incomplete")
+        D = nx.shortest_path_length(self.graph, target)
+        only_actors = {key: D[key] for key in self.actor}
+        L = [item // 2 for item in only_actors.values()]
+        plt.hist(L, bins=[i-0.5 for i in range(8)], log=True)
+        plt.title(f"Kevin Bacon number of {target}")
+        plt.ylabel("nubmer of actors")
+        plt.xlabel("Kevin Bacon Number")
+        plt.show()
+
+
+#Testing
+graph = MovieGraph()
+graph.average_number('Will Smith')
