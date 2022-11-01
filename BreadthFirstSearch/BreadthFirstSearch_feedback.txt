@@ -1,0 +1,25 @@
+11/01/22 10:14
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 2 (10 points):
+Score += 10
+
+Problem 3 (10 points):
+TypeError: append() takes exactly one argument (2 given)
+
+Problem 5 (10 points):
+Score += 10
+
+Problem 6 (10 points):
+TypeError: Invalid return type 'NoneType'
+
+Code Quality (5 points):
+Add comments
+Score += 1
+
+Total score: 26/50 = 52.0%
+
+-------------------------------------------------------------------------------
+
