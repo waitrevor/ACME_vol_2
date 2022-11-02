@@ -64,8 +64,10 @@ class Graph:
         Raises:
             KeyError: if n is not in the graph.
         """
+        #Removes key that is the node
         self.d.pop(n)
 
+        #Removes the values related to the key
         for i in self.d.keys():
             try:
                 self.d[i].remove(n)
@@ -85,6 +87,7 @@ class Graph:
             KeyError: if u or v are not in the graph, or if there is no
                 edge between u and v.
         """
+        #Removes the values that form the edge
         self.d[u].remove(v)
         self.d[v].remove(u)
 
@@ -104,15 +107,20 @@ class Graph:
         Raises:
             KeyError: if the source node is not in the graph.
         """
+        #Initializes variables
         V = []
         Q = deque()
         M = set()
         Q.append(source)
         M.add(source)
 
+        #Loops through while Q is not empty
         while len(Q) != 0:
+            #Returns the node popped from Q
             node = Q.popleft()
+            #Appends that node to list of visited nodes
             V.append(node)
+            #Loops through paths of node and adds them to Q and M
             for i in self.d[node]:
                 if i not in M:
                     M.add(i)
@@ -137,19 +145,31 @@ class Graph:
         Raises:
             KeyError: if the source or target nodes are not in the graph.
         """
-        Q = deque()
-        M = set()
-        Q.append((source, list(source)))
-        M.add(source)
-
-        while len(Q) != 0:
-            node, path = Q.popleft()
-            if node is target:
-                return path
+        #Initializes variables
+        V = []
+        Q = deque([source])
+        M = set({source})
+        VD = {}
+        #Loops through while the target is not one of the visited nodes
+        while target not in M:
+            #Returns the node popped from Q and appends it to list a visited nodes
+            node = Q.popleft()
+            V.append(node)
+            #Loops through paths of nodes and adds them to Q and M and updates VD
             for i in self.d[node]:
                 if i not in M:
                     M.add(i)
-                    Q.append(i, path + list(i))
+                    Q.append(i)
+                    VD[i] = node
+        #Initialize the path from the source to the target
+        L = [target]
+        current = target
+        #Finds the path from the source to the target
+        while current is not source:
+            L.append(VD[current])
+            current = VD[current]
+
+        return L[::-1]
             
 
 
@@ -174,23 +194,28 @@ class MovieGraph:
         Any '/' characters in movie titles have been replaced with the
         vertical pipe character | (for example, Frost|Nixon (2008)).
         """
+        #Stores Attributes
         self.title = set()
         self.actor = set()
         self.graph = nx.Graph()
 
+        #Opens the file and reads the lines
         with open(filename, 'r', encoding='utf-8') as file:
             lines = file.readlines()
 
+            #Loops through lines and adds the names as nodes of the graph
             for line in lines:
                 line = line.strip().split('/')
                 self.graph.add_nodes_from(line)
-                edge = []
 
+                #Finds the names related to a movie and adds them as edges
+                edge = []
                 for name in line[1:]:
                     edge.append((line[0],name))
+                    #Saves the names of the actors
                     self.actor.add(name)
-
                 self.graph.add_edges_from(edge)
+                #Saves the names of the movies
                 self.title.add(line[0])
 
     # Problem 5
@@ -202,6 +227,7 @@ class MovieGraph:
             (list): a shortest path from source to target, including endpoints and movies.
             (int): the number of steps from source to target, excluding movies.
         """
+        #Computes the shortest path from the source to the target and the number of steps between them
         return nx.shortest_path(self.graph, source, target), nx.shortest_path_length(self.graph, source, target) // 2
 
     # Problem 6
@@ -213,13 +239,16 @@ class MovieGraph:
         Returns:
             (float): the average path length from actor to target.
         """
+        #Calculates the shortest path to the target
         D = nx.shortest_path_length(self.graph, target)
         only_actors = {key: D[key] for key in self.actor}
         L = [item // 2 for item in only_actors.values()]
+
+        #Plots the historgram of how far away each other actor is from the target
         plt.hist(L, bins=[i-0.5 for i in range(8)], log=True)
         plt.title(f"Kevin Bacon number of {target}")
         plt.ylabel("nubmer of actors")
         plt.xlabel("Kevin Bacon Number")
         plt.show()
-
-
+        #Finds the Average path length from the actor
+        return sum(L) / len(L)
