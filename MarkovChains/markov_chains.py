@@ -1,8 +1,8 @@
 # markov_chains.py
 """Volume 2: Markov Chains.
-<Name>
-<Class>
-<Date>
+<Name> Trevor Wai
+<Class> Section 2
+<Date> 11/2/22
 """
 
 import numpy as np
@@ -39,7 +39,11 @@ class MarkovChain:
                             to B [   .5      .2   ]
         and the label-to-index dictionary is {"A":0, "B":1}.
         """
-        raise NotImplementedError("Problem 1 Incomplete")
+        self.A = A
+        self.states = states
+        m,n = A.shape
+        if m != n:
+            raise ValueError('A is not square or not column stochastic')
 
     # Problem 2
     def transition(self, state):
@@ -52,7 +56,8 @@ class MarkovChain:
         Returns:
             (str): the label of the state to transitioned to.
         """
-        raise NotImplementedError("Problem 2 Incomplete")
+        label = np.random.random(state)
+        return label
 
     # Problem 3
     def walk(self, start, N):
