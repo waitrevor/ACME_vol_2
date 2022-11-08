@@ -1,0 +1,26 @@
+11/07/22 22:55
+
+Problem 1 (5 points):
+MarkovChain() failed to raise a ValueError (no Exception raised)
+Score += 3
+
+Problem 2 (5 points):
+TypeError: 'str' object cannot be interpreted as an integer
+
+Problem 3 (10 points):
+NotImplementedError: Problem 3 Incomplete
+
+Problem 4 (10 points):
+NotImplementedError: Problem 4 Incomplete
+
+Problems 5-6 (15 points):
+NotImplementedError: Problem 5 Incomplete
+
+Code Quality (5 points):
+Add comments when you are done with all your code
+Score += 0
+
+Total score: 3/50 = 6.0%
+
+-------------------------------------------------------------------------------
+
