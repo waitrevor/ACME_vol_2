@@ -9,6 +9,7 @@ import numpy as np
 from scipy import linalg as la
 
 
+
 class MarkovChain:
     """A Markov chain with finitely many states.
 
@@ -39,11 +40,21 @@ class MarkovChain:
                             to B [   .5      .2   ]
         and the label-to-index dictionary is {"A":0, "B":1}.
         """
-        self.A = A
-        self.states = states
-        m,n = A.shape
-        if m != n:
+        if not np.allclose(A.sum(axis=0), np.ones(A.shape[1])):
             raise ValueError('A is not square or not column stochastic')
+
+        self.A = A
+
+        m,n = A.shape
+
+        if states is None:
+            self.states = [str(i) for i in range(n)]
+        else:
+            self.states = states
+
+        self.dictionary = dict(zip(self.states, [i for i in range(n)]))
+
+        
 
     # Problem 2
     def transition(self, state):
@@ -56,8 +67,10 @@ class MarkovChain:
         Returns:
             (str): the label of the state to transitioned to.
         """
-        label = np.random.random(state)
-        return label
+        col = self.dictionary[state]
+        trans = np.argmax(np.random.multinomial(1, self.A[:,col]))
+        label = self.states[trans]
+        return label 
 
     # Problem 3
     def walk(self, start, N):
@@ -71,7 +84,14 @@ class MarkovChain:
         Returns:
             (list(str)): A list of N state labels, including start.
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        L = []
+        currState = start
+
+        for i in range(N):
+            L.append(currState)
+            currState = self.transition(currState)
+        
+        return L
 
     # Problem 3
     def path(self, start, stop):
@@ -85,7 +105,15 @@ class MarkovChain:
         Returns:
             (list(str)): A list of state labels from start to stop.
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        currState = start
+        L = []
+        while currState != stop:
+            L.append(currState)
+            currState = self.transition(currState)
+
+        L.append(stop)
+        return L
+        
 
     # Problem 4
     def steady_state(self, tol=1e-12, maxiter=40):
@@ -101,7 +129,17 @@ class MarkovChain:
         Raises:
             ValueError: if there is no convergence within maxiter iterations.
         """
-        raise NotImplementedError("Problem 4 Incomplete")
+        m,n = self.A.shape
+        y = np.random.random(n)
+        x = y / sum(y) 
+        for itr in range(maxiter):
+            x_0 = x
+            x = self.A @ x
+            if sum(abs(x_0 - x)) < tol:
+                return x
+
+        raise ValueError("There is no convergence within maxiter iterations")
+
 
 class SentenceGenerator(MarkovChain):
     """A Markov-based simulator for natural language.
@@ -115,7 +153,25 @@ class SentenceGenerator(MarkovChain):
         contents. You may assume that the file has one complete sentence
         written on each line.
         """
-        raise NotImplementedError("Problem 5 Incomplete")
+        with open(filename, 'r') as file:
+            lines = file.readlines()
+            L = [line.strip().split() for line in lines]
+            word_set = set()
+            for sentence in L:
+                word_set.update(sentence)
+            words_list = ['$tart'] + list(word_set) + ['$top']
+            mat = np.zeros((len(words_list),len(words_list)))
+            for quote in L:
+                quote = ['$tart'] + quote + ['$top']
+                for i in range(len(quote) - 1):
+                    
+                    mat[words_list.index(quote[i+1])][words_list.index(quote[i])] += 1
+
+        mat[len(words_list) - 1][len(words_list) - 1] = 1
+
+        mat = mat / np.sum(mat, axis=0)
+
+        MarkovChain.__init__(self, mat, words_list)
 
     # Problem 6
     def babble(self):
@@ -130,4 +186,4 @@ class SentenceGenerator(MarkovChain):
             >>> print(yoda.babble())
             The dark side of loss is a path as one with you.
         """
-        raise NotImplementedError("Problem 6 Incomplete")
+        return ' '.join(self.path('$tart', '$top')[1:-1])
