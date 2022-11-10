@@ -40,18 +40,22 @@ class MarkovChain:
                             to B [   .5      .2   ]
         and the label-to-index dictionary is {"A":0, "B":1}.
         """
+        #Check to make sure the matrix is square or column stochastic
         if not np.allclose(A.sum(axis=0), np.ones(A.shape[1])):
             raise ValueError('A is not square or not column stochastic')
 
+        #Declares Attributes
         self.A = A
 
         m,n = A.shape
 
+        #If no lebels provided makes labels 0,..,n-1
         if states is None:
             self.states = [str(i) for i in range(n)]
         else:
             self.states = states
-
+        
+        #Label to index dictionary
         self.dictionary = dict(zip(self.states, [i for i in range(n)]))
 
         
@@ -67,6 +71,7 @@ class MarkovChain:
         Returns:
             (str): the label of the state to transitioned to.
         """
+        #Transition to a new state using probabilities from matrix
         col = self.dictionary[state]
         trans = np.argmax(np.random.multinomial(1, self.A[:,col]))
         label = self.states[trans]
@@ -84,9 +89,11 @@ class MarkovChain:
         Returns:
             (list(str)): A list of N state labels, including start.
         """
+        #Initialize Variables
         L = []
         currState = start
 
+        #Transitions to a new state N-1 times
         for i in range(N):
             L.append(currState)
             currState = self.transition(currState)
@@ -105,8 +112,11 @@ class MarkovChain:
         Returns:
             (list(str)): A list of state labels from start to stop.
         """
+        #Initializes variables
         currState = start
         L = []
+        
+        #Transitions to a new state until it reaches the stop state
         while currState != stop:
             L.append(currState)
             currState = self.transition(currState)
@@ -129,12 +139,15 @@ class MarkovChain:
         Raises:
             ValueError: if there is no convergence within maxiter iterations.
         """
+        #Declares Variables
         m,n = self.A.shape
         y = np.random.random(n)
         x = y / sum(y) 
+        #Iterates maxiter times to return the steady state
         for itr in range(maxiter):
             x_0 = x
             x = self.A @ x
+            #Returns the stead state if the 1-norm is less than tolerance
             if sum(abs(x_0 - x)) < tol:
                 return x
 
@@ -155,22 +168,23 @@ class SentenceGenerator(MarkovChain):
         """
         with open(filename, 'r') as file:
             lines = file.readlines()
+            #Creates a list of lists consiting of words
             L = [line.strip().split() for line in lines]
+            #Turns the list L into a set to get rid of duplicates
             word_set = set()
             for sentence in L:
                 word_set.update(sentence)
+            #Turns the set back into a list adding labels $tart and $top
             words_list = ['$tart'] + list(word_set) + ['$top']
             mat = np.zeros((len(words_list),len(words_list)))
+            #Builds the transition matrix
             for quote in L:
                 quote = ['$tart'] + quote + ['$top']
                 for i in range(len(quote) - 1):
-                    
                     mat[words_list.index(quote[i+1])][words_list.index(quote[i])] += 1
-
         mat[len(words_list) - 1][len(words_list) - 1] = 1
-
+        #Normalizes the transition matrix
         mat = mat / np.sum(mat, axis=0)
-
         MarkovChain.__init__(self, mat, words_list)
 
     # Problem 6
@@ -186,4 +200,5 @@ class SentenceGenerator(MarkovChain):
             >>> print(yoda.babble())
             The dark side of loss is a path as one with you.
         """
+        #Creates a random sentence using MarkovChain.pauth()
         return ' '.join(self.path('$tart', '$top')[1:-1])
