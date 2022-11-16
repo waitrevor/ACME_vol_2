@@ -49,7 +49,7 @@ def largest_files(n):
     infiles = list(np.array(infiles)[np.argsort(sizes)][::-1][:n])
 
     #Counts the number of lines of the smallest file
-    num_lines = subprocess.check_output(['wc', '-1', infiles[-1]]).decode()
+    num_lines = subprocess.check_output(['wc', '-l', infiles[-1]]).decode()
 
     #Writes the number of lines to a file
     with open('smallest.txt', 'w') as outfile:
