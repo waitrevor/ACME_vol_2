@@ -4,3 +4,38 @@ fourier_transform.ipynb has not been modified yet
 
 -------------------------------------------------------------------------------
 
+12/06/22 10:43
+
+Question 1 (5 points):
+Score += 5
+
+Question 2 (5 points):
+Score += 5
+
+Question 3 (5 points):
+Score += 5
+
+Question 4 (5 points):
+Score += 5
+
+Question 5 (5 points):
+Score += 5
+
+Question 6 (10 points):
+Score += 10
+
+Question 7 (5 points):
+Score += 5
+
+Question 8  (5 points):
+Score += 5
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 50/50 = 100.0%
+
+Excellent!
+
+-------------------------------------------------------------------------------
+
