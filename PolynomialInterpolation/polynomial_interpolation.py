@@ -1,10 +1,15 @@
 # polynomial_interpolation.py
 """Volume 2: Polynomial Interpolation.
-<Name>
-<Class>
-<Date>
+<Name> Trevor Wai
+<Class> Section 2
+<Date> 1/18/23
 """
 
+import numpy as np
+from matplotlib import pyplot as plt
+from scipy import linalg as la
+from scipy.interpolate import BarycentricInterpolator
+from numpy.fft import fft
 
 # Problems 1 and 2
 def lagrange(xint, yint, points):
@@ -20,7 +25,14 @@ def lagrange(xint, yint, points):
     Returns:
         ((m,) ndarray): The value of the polynomial at the specified points.
     """
-    raise NotImplementedError("Problems 1 and 2 Incomplete")
+    n = len(xint)
+    m = len(points)
+    dem = np.array([np.prod(np.delete([xint[j] - xint[k] for k in range(n)], j)) for j in range(n)])
+    num = np.array([np.prod(np.delete(points - xint.reshape((n,1)),j,0),axis=0) for j in range(n)])
+    L = num / dem.reshape((n,1))
+    
+    p = np.sum(L * yint.reshape(n,1), axis=0)
+    return p
 
 
 # Problems 3 and 4
@@ -41,7 +53,16 @@ class Barycentric:
             xint ((n,) ndarray): x values of interpolating points.
             yint ((n,) ndarray): y values of interpolating points.
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        self.xint = xint
+        self.yint = yint
+        weights = np.array([])
+        for j in xint:
+            w = 1
+            for k in xint:
+                if j != k:
+                    w *= j - k
+            weights = np.append(weights, 1/w)
+        self.weights = weights
 
     def __call__(self, points):
         """Using the calcuated Barycentric weights, evaluate the interpolating polynomial
@@ -53,7 +74,17 @@ class Barycentric:
         Returns:
             ((m,) ndarray): Array of values where the polynomial has been computed.
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        val = 0
+        num = 0
+        dem = 0
+
+        for i in range(len(self.xint)):
+            num += ((self.weights[i] / (points - self.xint[i] + 0.000000001)) * self.yint[i]) 
+            dem += (self.weights[i] / (points - self.xint[i] + 0.000000001))
+
+        val = num/dem
+
+        return val
 
     # Problem 4
     def add_weights(self, xint, yint):
@@ -64,7 +95,13 @@ class Barycentric:
             xint ((m,) ndarray): x values of new interpolating points.
             yint ((m,) ndarray): y values of new interpolating points.
         """
-        raise NotImplementedError("Problem 4 Incomplete")
+        for x in xint:
+            weights = np.array([np.prod(1 / (x - self.xint + 0.000000001))])
+            self.weights = self.weights / (x - self.xint + 0.000000001)
+        
+        self.xint = np.append(self.xint, xint)
+        self.yint = np.append(self.yint, yint)
+        self.weights = np.append(self.weights, weights)
 
 
 # Problem 5
@@ -75,7 +112,26 @@ def prob5():
     extremal points. Plot the absolute error of the interpolation with each
     method on a log-log plot.
     """
-    raise NotImplementedError("Problem 5 Incomplete")
+    domain = np.linspace(-1, 1, 400)
+    f = lambda x: 1/(1+25 * x**2) 
+    n = [2**2, 2**3, 2**4, 2**5, 2**6, 2**7, 2**8]
+    L = []
+    C_L = []
+    for i in n:
+        pts = np.linspace(-1, 1, i)
+        poly = BarycentricInterpolator(pts)
+        poly.set_yi(f(pts))
+        L.append(la.norm(f(domain) - poly(domain), ord=np.inf))
+        cheby = np.cos(np.arange(i+1) * np.pi / i)
+        cheb_poly = BarycentricInterpolator(cheby)
+        cheb_poly.set_yi(f(cheby))
+        C_L.append(la.norm(f(domain) - cheb_poly(domain), ord=np.inf))
+
+    plt.loglog(n, L, label='evenly spaced')
+    plt.loglog(n, C_L, label='Chebysev')
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
 
 
 # Problem 6
@@ -90,7 +146,14 @@ def chebyshev_coeffs(f, n):
     Returns:
         coeffs ((n+1,) ndarray): Chebyshev coefficients for the interpolating polynomial.
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+    y = np.cos((np.pi * np.arange(2*n)) / n)
+    samples = f(y)
+
+    coeffs = np.real(fft(samples))[:n+1] / n
+    coeffs[0] = coeffs[0] / 2
+    coeffs[n] = coeffs[n] / 2
+
+    return coeffs
 
 
 # Problem 7
@@ -102,4 +165,56 @@ def prob7(n):
     Parameters:
         n (int): Number of interpolating points to use.
     """
-    raise NotImplementedError("Problem 7 Incomplete")
+    data = np.load('airdata.npy')
+    fx = lambda a, b, n: .5*(a+b + (b-a) * np.cos(np.arange(n+1) * np.pi / n))
+    a, b = 0, 366 - 1/24
+    domain = np.linspace(0, b, 8784)
+    points = fx(a, b, n)
+    temp = np.abs(points - domain.reshape(8784, 1))
+    temp2 = np.argmin(temp, axis=0)
+    poly = Barycentric(domain[temp2], data[temp2])
+
+    plt.subplot(211)
+    plt.plot(domain, data)
+
+    plt.subplot(212)
+    plt.plot(domain, poly(domain))
+    plt.show()
+
+
+
+
+
+# def prob25():
+#     domain = np.linspace(-1, 1, 1000)
+#     xint = np.array([-1, -1/3, 1/3, 1])
+#     yint = np.array([np.sin(-np.pi), np.sin(-np.pi / 3), np.sin(np.pi/3), np.sin(np.pi)])
+#     bary = Barycentric(xint, yint)
+#     plt.plot(domain, np.sin(np.pi * domain))
+#     plt.plot(domain, bary(domain))
+#     plt.show()
+
+# def prob26():
+#     domain = np.linspace(-1, 1, 1000)
+#     xint = np.array([-1, -1/3, 1/3, 1])
+#     xcheby = np.cos(np.arange(0,4) * np.pi / 3)
+#     yint = np.array([np.sin(-np.pi), np.sin(-np.pi / 3), np.sin(np.pi/3), np.sin(np.pi)])
+#     bary = Barycentric(xint, yint)
+#     bary_cheb = Barycentric(xcheby, np.sin(np.pi * xcheby))
+#     plt.plot(domain, np.sin(np.pi * domain))
+#     plt.plot(domain, bary(domain))
+#     plt.plot(domain, bary_cheb(domain))
+#     plt.show()
+
+# def g(a, b, x):
+#     return ((b - a) / 2) * x + ((b + a) / 2)
+
+# def prob28():
+#     domain = np.linspace(1, 20, 1000)
+#     z = np.cos((np.pi / 20) * (np.arange(0,20) + (1 / 2)))
+#     w = lambda x: np.prod(x.reshape((len(x), 1)) - np.arange(1, 21), axis=1)
+#     q = lambda x: np.prod(x.reshape((len(x), 1)) - g(1, 20, z), axis=1)
+#     plt.plot(domain, w(domain), label='Wilkinson')
+#     plt.plot(domain, q(domain), label='Chebyshev')
+#     plt.legend()
+#     plt.show()
