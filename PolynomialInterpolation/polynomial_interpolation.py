@@ -27,10 +27,11 @@ def lagrange(xint, yint, points):
     """
     n = len(xint)
     m = len(points)
+    #Subroutine that will evaluate each of the n Lagrange Basis functions at every point in domain
     dem = np.array([np.prod(np.delete([xint[j] - xint[k] for k in range(n)], j)) for j in range(n)])
     num = np.array([np.prod(np.delete(points - xint.reshape((n,1)),j,0),axis=0) for j in range(n)])
     L = num / dem.reshape((n,1))
-    
+    #Final array
     p = np.sum(L * yint.reshape(n,1), axis=0)
     return p
 
@@ -53,8 +54,10 @@ class Barycentric:
             xint ((n,) ndarray): x values of interpolating points.
             yint ((n,) ndarray): y values of interpolating points.
         """
+        #Initialzes Weights and x and y interpolating points
         self.xint = xint
         self.yint = yint
+        #Calculates the Barycentric weights
         weights = np.array([])
         for j in xint:
             w = 1
@@ -78,6 +81,7 @@ class Barycentric:
         num = 0
         dem = 0
 
+        #Calculates the interpolating polynomial at points
         for i in range(len(self.xint)):
             num += ((self.weights[i] / (points - self.xint[i] + 0.000000001)) * self.yint[i]) 
             dem += (self.weights[i] / (points - self.xint[i] + 0.000000001))
@@ -95,10 +99,11 @@ class Barycentric:
             xint ((m,) ndarray): x values of new interpolating points.
             yint ((m,) ndarray): y values of new interpolating points.
         """
+        #Updates existing Barycentric weights
         for x in xint:
             weights = np.array([np.prod(1 / (x - self.xint + 0.000000001))])
             self.weights = self.weights / (x - self.xint + 0.000000001)
-        
+        #Saves new weights, x points and y points
         self.xint = np.append(self.xint, xint)
         self.yint = np.append(self.yint, yint)
         self.weights = np.append(self.weights, weights)
@@ -118,10 +123,12 @@ def prob5():
     L = []
     C_L = []
     for i in n:
+        #Interpolates over evenly spaced points
         pts = np.linspace(-1, 1, i)
         poly = BarycentricInterpolator(pts)
         poly.set_yi(f(pts))
         L.append(la.norm(f(domain) - poly(domain), ord=np.inf))
+        #Interpolates over the Chebyshev polynomials
         cheby = np.cos(np.arange(i+1) * np.pi / i)
         cheb_poly = BarycentricInterpolator(cheby)
         cheb_poly.set_yi(f(cheby))
@@ -146,9 +153,10 @@ def chebyshev_coeffs(f, n):
     Returns:
         coeffs ((n+1,) ndarray): Chebyshev coefficients for the interpolating polynomial.
     """
+    #Finds the Chebyshev polynomial
     y = np.cos((np.pi * np.arange(2*n)) / n)
     samples = f(y)
-
+    #Interpolates
     coeffs = np.real(fft(samples))[:n+1] / n
     coeffs[0] = coeffs[0] / 2
     coeffs[n] = coeffs[n] / 2
@@ -165,7 +173,10 @@ def prob7(n):
     Parameters:
         n (int): Number of interpolating points to use.
     """
+    #Loads the information
     data = np.load('airdata.npy')
+
+    #Interpolates the air quality data using Barycentril Lagrange Interpolation
     fx = lambda a, b, n: .5*(a+b + (b-a) * np.cos(np.arange(n+1) * np.pi / n))
     a, b = 0, 366 - 1/24
     domain = np.linspace(0, b, 8784)
@@ -174,47 +185,12 @@ def prob7(n):
     temp2 = np.argmin(temp, axis=0)
     poly = Barycentric(domain[temp2], data[temp2])
 
+    #Plot of original Data
     plt.subplot(211)
     plt.plot(domain, data)
-
+    #Plot of Interpolating polynomial
     plt.subplot(212)
     plt.plot(domain, poly(domain))
     plt.show()
 
 
-
-
-
-# def prob25():
-#     domain = np.linspace(-1, 1, 1000)
-#     xint = np.array([-1, -1/3, 1/3, 1])
-#     yint = np.array([np.sin(-np.pi), np.sin(-np.pi / 3), np.sin(np.pi/3), np.sin(np.pi)])
-#     bary = Barycentric(xint, yint)
-#     plt.plot(domain, np.sin(np.pi * domain))
-#     plt.plot(domain, bary(domain))
-#     plt.show()
-
-# def prob26():
-#     domain = np.linspace(-1, 1, 1000)
-#     xint = np.array([-1, -1/3, 1/3, 1])
-#     xcheby = np.cos(np.arange(0,4) * np.pi / 3)
-#     yint = np.array([np.sin(-np.pi), np.sin(-np.pi / 3), np.sin(np.pi/3), np.sin(np.pi)])
-#     bary = Barycentric(xint, yint)
-#     bary_cheb = Barycentric(xcheby, np.sin(np.pi * xcheby))
-#     plt.plot(domain, np.sin(np.pi * domain))
-#     plt.plot(domain, bary(domain))
-#     plt.plot(domain, bary_cheb(domain))
-#     plt.show()
-
-# def g(a, b, x):
-#     return ((b - a) / 2) * x + ((b + a) / 2)
-
-# def prob28():
-#     domain = np.linspace(1, 20, 1000)
-#     z = np.cos((np.pi / 20) * (np.arange(0,20) + (1 / 2)))
-#     w = lambda x: np.prod(x.reshape((len(x), 1)) - np.arange(1, 21), axis=1)
-#     q = lambda x: np.prod(x.reshape((len(x), 1)) - g(1, 20, z), axis=1)
-#     plt.plot(domain, w(domain), label='Wilkinson')
-#     plt.plot(domain, q(domain), label='Chebyshev')
-#     plt.legend()
-#     plt.show()
