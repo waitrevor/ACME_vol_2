@@ -58,13 +58,17 @@ class Barycentric:
         self.xint = xint
         self.yint = yint
         #Calculates the Barycentric weights
-        weights = np.array([])
-        for j in xint:
-            w = 1
-            for k in xint:
-                if j != k:
-                    w *= j - k
-            weights = np.append(weights, 1/w)
+        n = len(self.x)
+        self.weights = np.ones(n)
+        C = (np.max(self.x) - np.min(self.x)) / 4
+
+        shuffle = np.random.permutation(n-1)
+
+        #Compute the weights
+        for j in range(n):
+            weights = (self.x[j] - np.delete(self.x, j)) / C
+            weights = weights[shuffle]
+            self.weights[j] /= np.product(weights)
         self.weights = weights
 
     def __call__(self, points):
@@ -99,14 +103,22 @@ class Barycentric:
             xint ((m,) ndarray): x values of new interpolating points.
             yint ((m,) ndarray): y values of new interpolating points.
         """
-        #Updates existing Barycentric weights
-        for x in xint:
-            weights = np.array([np.prod(1 / (x - self.xint + 0.000000001))])
-            self.weights = self.weights / (x - self.xint + 0.000000001)
         #Saves new weights, x points and y points
         self.xint = np.append(self.xint, xint)
         self.yint = np.append(self.yint, yint)
-        self.weights = np.append(self.weights, weights)
+
+        #Update the weights
+        n = len(self.x)
+        self.weights = np.ones(n)
+        C = (np.max(self.x) - np.min(self.x)) / 4
+
+        shuffle = np.random.permutation(n-1)
+
+        #Recompute the weights
+        for j in range(n):
+            weights = (self.x[j] - np.delete(self.x, j)) / C
+            weights = weights[shuffle]
+            self.weights[j] /= np.product(weights)
 
 
 # Problem 5
