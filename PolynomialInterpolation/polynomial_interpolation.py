@@ -58,18 +58,17 @@ class Barycentric:
         self.xint = xint
         self.yint = yint
         #Calculates the Barycentric weights
-        n = len(self.x)
+        n = len(self.xint)
         self.weights = np.ones(n)
-        C = (np.max(self.x) - np.min(self.x)) / 4
+        C = (np.max(self.xint) - np.min(self.xint)) / 4
 
         shuffle = np.random.permutation(n-1)
 
         #Compute the weights
         for j in range(n):
-            weights = (self.x[j] - np.delete(self.x, j)) / C
-            weights = weights[shuffle]
-            self.weights[j] /= np.product(weights)
-        self.weights = weights
+            temp = (self.xint[j] - np.delete(self.xint, j)) / C
+            temp = temp[shuffle]
+            self.weights[j] /= np.product(temp)
 
     def __call__(self, points):
         """Using the calcuated Barycentric weights, evaluate the interpolating polynomial
@@ -108,15 +107,15 @@ class Barycentric:
         self.yint = np.append(self.yint, yint)
 
         #Update the weights
-        n = len(self.x)
+        n = len(self.xint)
         self.weights = np.ones(n)
-        C = (np.max(self.x) - np.min(self.x)) / 4
+        C = (np.max(self.xint) - np.min(self.xint)) / 4
 
         shuffle = np.random.permutation(n-1)
 
         #Recompute the weights
-        for j in range(n):
-            weights = (self.x[j] - np.delete(self.x, j)) / C
+        for j in range(n+1):
+            weights = (self.xint[j] - np.delete(self.xint, j)) / C
             weights = weights[shuffle]
             self.weights[j] /= np.product(weights)
 
@@ -200,9 +199,12 @@ def prob7(n):
     #Plot of original Data
     plt.subplot(211)
     plt.plot(domain, data)
+    plt.title('Original Data')
     #Plot of Interpolating polynomial
     plt.subplot(212)
     plt.plot(domain, poly(domain))
+    plt.title('Approx Poly')
+    plt.tight_layout()
     plt.show()
 
 
