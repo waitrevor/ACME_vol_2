@@ -1,8 +1,8 @@
 # oneD_optimization.py
 """Volume 2: One-Dimensional Optimization.
-<Name>
-<Class>
-<Date>
+<Name> Trevor Wai
+<Class> Section 2
+<Date> 2/1/23
 """
 
 
@@ -22,7 +22,7 @@ def golden_section(f, a, b, tol=1e-5, maxiter=100):
         (bool): Whether or not the algorithm converged.
         (int): The number of iterations computed.
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    
 
 
 # Problem 2
