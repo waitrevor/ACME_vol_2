@@ -1,0 +1,28 @@
+02/06/23 18:03
+
+Problem 1 (10 points):
+TypeError: cannot unpack non-iterable numpy.float64 object
+
+Problem 2 (10 points):
+Score += 10
+
+Problem 3 (15 points):
+secant1d() failed (f'(x) != 0)
+	Correct response: 0
+	Student response: 6.28318530718
+secant1d() failed (incorrect minimum)
+	Correct response: 0
+	Student response: 3.14159265359
+OverflowError: math range error
+
+Problem 4 (10 points):
+Score += 10
+
+Code Quality (5 points):
+Add comments
+Score += 0
+
+Total score: 20/50 = 40.0%
+
+-------------------------------------------------------------------------------
+
