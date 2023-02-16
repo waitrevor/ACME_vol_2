@@ -4,6 +4,8 @@
 <Class> Section 2
 <Date> 2/1/23
 """
+
+from scipy import optimize as opt
 import numpy as np
 
 # Problem 1
@@ -22,23 +24,30 @@ def golden_section(f, a, b, tol=1e-5, maxiter=100):
         (bool): Whether or not the algorithm converged.
         (int): The number of iterations computed.
     """
+    conv = False
+    #Set the Initial minimizer approximation as the interval midpoint
     x0 = (a + b) / 2
     phi = (1 + np.sqrt(5)) / 2
+    #Iterate only maxiter times at most
     for i in range(1, maxiter + 1):
         c = (b-a) / phi
         new_a = b - c
         new_b = a + c
+        #Get new boundaries for the search interval
         if f(new_a) <= f(new_b):
             b = new_b
         else:
             a = new_a
+        #Set the minimizer approximation as the interval midpoint
         x1 = (a + b) / 2
-        if abs(x0 - x1) < tol:
+        if abs(x1 - x0) < tol:
+            conv = True
+            #Stop iterating if the apprximation stops changing enough
             break
             
         x0 = x1
 
-    return x1
+    return x1, conv, i
 
 
 # Problem 2
@@ -57,10 +66,12 @@ def newton1d(df, d2f, x0, tol=1e-5, maxiter=100):
         (bool): Whether or not the algorithm converged.
         (int): The number of iterations computed.
     """
+    #Initialize
     x = x0
+    #Iterate at most maxiter times
     for i in range(maxiter):
         x -= (df(x) / d2f(x))
-
+        #Stops iterating if the approximation stops changing enough
         if abs(x0 - x) < tol:
             return x, True, i
         
@@ -85,18 +96,21 @@ def secant1d(df, x0, x1, tol=1e-5, maxiter=100):
         (bool): Whether or not the algorithm converged.
         (int): The number of iterations computed.
     """
-    dx1 = df(x1)
-    dx0 = df(x0)
-    x = x1 - ((x1*dx1 - x0*dx0) / (dx1 - dx0))
-    
-    for i in range(maxiter):
-        dx = df(x)
-        xtemp = x
-        x -= (x * dx - x1 * dx1) / (dx - dx1)
-        if abs(xtemp - x) < tol:
+    #Initialize
+    df_x1 = df(x1)
+    df_x0 = df(x0)
+    #Iterate Maxiter times
+    for i in range(1, maxiter + 1):
+        x =  (x0*df_x1 - x1*df_x0) / (df_x1 - df_x0)
+
+        #Stop once the difference is small
+        if abs(x - x1) < tol:
             return x, True, i
-        x1 = xtemp
-        dx1 = dx
+        
+        df_x0 = df_x1
+        df_x1 = df(x)
+        x0 = x1
+        x1 = x
     return x, False, maxiter
         
 
@@ -118,9 +132,11 @@ def backtracking(f, Df, x, p, alpha=1, rho=.9, c=1e-4):
     Returns:
         alpha (float): Optimal step size.
     """
+    #Compute these values once
     Dfp = Df(x).T @ p
     fx = f(x)
 
+    
     while (f(x + alpha * p) > fx + (c * alpha * Dfp)):
         alpha = rho * alpha
     
