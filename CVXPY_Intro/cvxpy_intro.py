@@ -1,10 +1,12 @@
 # cvxpy_intro.py
 """Volume 2: Intro to CVXPY.
-<Name>
-<Class>
-<Date>
+<Name> Trevor Wai
+<Class> Section 1
+<Date> 3/22/23
 """
 
+import cvxpy as cp
+import numpy as np
 
 def prob1():
     """Solve the following convex optimization problem:
@@ -21,8 +23,21 @@ def prob1():
         The optimizer x (ndarray)
         The optimal value (float)
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    #Objective
+    x = cp.Variable(3, nonneg=True)
+    c = np.array([2, 1, 3])
+    objective = cp.Minimize(c.T @ x)
 
+    #Constraints
+    G = np.array([[1, 2, 0], [0, 1, -4], [-2, -10, -3]])
+    h = np.array([3, 1, -12])
+    constraints = [G @ x <= h]
+
+    #Problem
+    problem = cp.Problem(objective, constraints)
+    min_val = problem.solve()
+
+    return x.value, min_val
 
 # Problem 2
 def l1Min(A, b):
@@ -39,7 +54,20 @@ def l1Min(A, b):
         The optimizer x (ndarray)
         The optimal value (float)
     """
-    raise NotImplementedError("Problem 2 Incomplete")
+    #Objective
+    m, n = A.shape
+    x = cp.Variable(n)
+    c = cp.norm(x, 1)
+    objective = cp.Minimize(c)
+    #Constraints
+    constraints = [A @ x == b]
+
+    #Problem
+    problem = cp.Problem(objective, constraints)
+    min_val = problem.solve()
+
+    return x.value, min_val
+
 
 
 # Problem 3
@@ -51,8 +79,21 @@ def prob3():
         The optimizer x (ndarray)
         The optimal value (float)
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    #Objective
+    x = cp.Variable(6, nonneg=True)
+    c = np.array([4, 7, 6, 8, 8, 9])
+    objective = cp.Minimize(c.T @ x)
 
+    #Constraints
+    A = np.array([[1, 1, 0, 0, 0, 0], [0, 0, 1, 1, 0, 0], [0, 0, 0, 0, 1, 1], [1, 0, 1, 0, 1, 0], [0, 1, 0, 1, 0, 1]])
+    b = np.array([7, 2, 4, 5, 8])
+    constraints = [A @ x == b]
+
+    #Problem
+    problem = cp.Problem(objective, constraints)
+    min_val = problem.solve()
+
+    return x.value, min_val
 
 # Problem 4
 def prob4():
@@ -64,7 +105,16 @@ def prob4():
         The optimizer x (ndarray)
         The optimal value (float)
     """
-    raise NotImplementedError("Problem 4 Incomplete")
+    #Objective
+    Q = np.array([[3,2,1], [2,4,2], [1,2,3]])
+    r = np.array([3, 0, 1])
+    x = cp.Variable(3)
+    #Prolblem with constraints
+    prob = cp.Problem(cp.Minimize(0.5 * cp.quad_form(x, Q) + r.T @ x))
+
+    min_val = prob.solve()
+    return x.value, min_val
+
 
 
 # Problem 5
@@ -81,7 +131,21 @@ def prob5(A, b):
         The optimizer x (ndarray)
         The optimal value (float)
     """
-    raise NotImplementedError("Problem 5 Incomplete")
+    #Objective
+    m, n = A.shape
+    x = cp.Variable(n, nonneg=True)
+    objective = cp.Minimize(cp.norm(A @ x - b, 2))
+    
+    #Constraint
+    constraint = [sum(x) == 1]
+
+    #Problem
+    problem = cp.Problem(objective, constraint)
+    min_val = problem.solve()
+
+    return x.value, min_val
+
+
 
 
 # Problem 6
@@ -95,5 +159,26 @@ def prob6():
     Returns (in order):
         The optimizer x (ndarray)
         The optimal value (float)
-    """	 
-    raise NotImplementedError("Problem 6 Incomplete")
+    """
+    #Reads in Data
+    data = np.load('food.npy', allow_pickle=True)
+
+    #Objective
+    m,n = data.shape
+    x = cp.Variable(m, nonneg=True)
+    objective = cp.Minimize(data[:,0] @ x)
+
+    #Constraint
+    s = data[:,1]
+    c, f, s_hat, c_hat, f_hat, p_hat = np.array([data[:,i] * s for i in range(2, n)])
+    G = np.array([c, f, s_hat])
+    P = np.array([c_hat, f_hat, p_hat])
+    h = np.array([2000, 65, 50])
+    q = np.array([1000, 25, 46])
+    constraints = [G @ x <= h, P @ x >= q]
+
+    #Problem
+    problem = cp.Problem(objective, constraints)
+
+    min_value = problem.solve()
+    return x.value, min_value
