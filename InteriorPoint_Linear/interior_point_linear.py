@@ -94,7 +94,7 @@ def interiorPoint(A, b, c, niter=20, tol=1e-16, verbose=False):
         I = np.eye(n)
         DF = np.block([[np.zeros((n,n)), A.T, I], [A, zero, np.zeros_like(A)], [np.diag(mu), np.zeros((n,m)), np.diag(x)]])
         #Otherside of the equal sign
-        b = -_F(x, lamb, mu) + np.concatenate((np.zeros(n), np.zeros(n), (1/10) * (x.T @ mu / n) * np.ones(m)))
+        b = -_F(x, lamb, mu) + np.concatenate((np.zeros(n), np.zeros(m), (1/10) * (x.T @ mu / n) * np.ones(n)))
 
         return la.lu_solve(la.lu_factor(DF), b)
     
@@ -103,7 +103,6 @@ def interiorPoint(A, b, c, niter=20, tol=1e-16, verbose=False):
     #Problem 3 Compte the step size
     def _directional(direction):
         delta_x = direction[:n]
-        delta_lamb = direction[n:n+m]
         delta_mu = direction[n+m:]
         #Alpha max and Delta max
         alpha = np.min(-mu / delta_mu, where=delta_mu<0, initial=1)
@@ -189,7 +188,3 @@ def leastAbsoluteDeviations(filename='simdata.txt'):
     plt.ylabel('y')
     plt.tight_layout()
     plt.show()
-
-
-
-    
