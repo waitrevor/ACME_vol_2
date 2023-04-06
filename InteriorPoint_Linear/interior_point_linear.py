@@ -1,8 +1,8 @@
 # interior_point_linear.py
 """Volume 2: Interior Point for Linear Programs.
-<Name>
-<Class>
-<Date>
+<Name> Trevor Wai
+<Class> Section 1
+<Date> 4/5/23
 """
 
 import numpy as np
@@ -80,9 +80,116 @@ def interiorPoint(A, b, c, niter=20, tol=1e-16, verbose=False):
         x ((n, ) ndarray): The optimal point.
         val (float): The minimum value of the objective function.
     """
-    raise NotImplementedError("Problems 1-4 Incomplete")
+    #Starting points
+    x, lamb, mu = starting_point(A, b, c)
+    m, n = A.shape
+    #Problem 1 Function F
+    def _F(x, lamb, mu):
+        M = np.diag(mu)
+        return np.concatenate((A.T@lamb + mu - c, A @ x - b, M @ x))
+    
+    #Problem 2 searh direction
+    def _search_direction():
+        zero = np.zeros((m,m))
+        I = np.eye(n)
+        DF = np.block([[np.zeros((n,n)), A.T, I], [A, zero, np.zeros_like(A)], [np.diag(mu), np.zeros((n,m)), np.diag(x)]])
+        #Otherside of the equal sign
+        b = -_F(x, lamb, mu) + np.concatenate((np.zeros(n), np.zeros(n), (1/10) * (x.T @ mu / n) * np.ones(m)))
+
+        return la.lu_solve(la.lu_factor(DF), b)
+    
+    direction = _search_direction()
+
+    #Problem 3 Compte the step size
+    def _directional(direction):
+        delta_x = direction[:n]
+        delta_lamb = direction[n:n+m]
+        delta_mu = direction[n+m:]
+        #Alpha max and Delta max
+        alpha = np.min(-mu / delta_mu, where=delta_mu<0, initial=1)
+        delta = np.min(-x/delta_x, where=delta_x<0, initial=1)
+        #Alpha, Delta min
+        alpha = min([1, 0.95 * alpha])
+        delta = min([1, 0.95 * delta])
+        return alpha, delta
+    
+    for i in range(niter):
+        direction = _search_direction()
+
+        #Delta Values
+        delta_x = direction[:n]
+        delta_lamb = direction[n:n+m]
+        delta_mu = direction[n+m:]
+
+        #Alpha Delta Values
+        alpha, delta = _directional(direction)
+
+        #Update x, lambda, mu, optimal value, and nu
+        x += delta * delta_x
+
+        lamb += alpha * delta_lamb
+
+        mu += alpha * delta_mu
+
+        val = c.T @ x
+
+        nu = (x.T @ mu) / n
+
+        #Break if duality measure is less than tol
+        if nu < tol:
+            break
+
+    
+    return x, val
+    
 
 
 def leastAbsoluteDeviations(filename='simdata.txt'):
     """Generate and show the plot requested in the lab."""
-    raise NotImplementedError("Problem 5 Incomplete")
+    data = np.loadtxt(filename, dtype=float)
+
+    #Initialize the vectors c and y
+    m = data.shape[0]
+    n = data.shape[1] - 1
+    c = np.zeros(3*m + 2*(n + 1))
+    c[:m] = 1
+    y = np.empty(2*m)
+    y[::2] = -data[:, 0]
+    y[1::2] = data[:, 0]
+    x = data[:, 1:]
+
+    #Initialiing the Constraint matrix correctly
+    A = np.ones((2*m, 3*m + 2*(n + 1)))
+    A[::2, :m] = np.eye(m)
+    A[1::2, :m] = np.eye(m)
+    A[::2, m:m+n] = -x
+    A[1::2, m:m+n] = x
+    A[::2, m+n:m+2*n] = x
+    A[1::2, m+n:m+2*n] = -x
+    A[::2, m+2*n] = -1
+    A[1::2, m+2*n+1] = -1
+    A[:, m+2*n+2:] = -np.eye(2*m, 2*m)
+
+    #Calcuate the solution by calling interior point function
+    sol = interiorPoint(A, y, c, niter=10)[0]
+
+    #Extract values of Beta
+    beta = sol[m:m+n] - sol[m+n:m+2*n]
+    b = sol[m+2*n] - sol[m+2*n+1]
+
+    #Plots
+    slope, intercept = linregress(data[:,1], data[:,0])[:2]
+    domain = np.linspace(0,10,200)
+    plt.scatter(data[:,1], data[:,0], label='Data')
+    plt.plot(domain, domain*slope + intercept, 'g', label='Least Squares')
+    plt.plot(domain, domain * beta + b, 'red', label='LAD')
+    plt.legend()
+    plt.title('Simdata')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.tight_layout()
+    plt.show()
+
+
+
+    
