@@ -1,11 +1,13 @@
 # dynamic_programming.py
 """Volume 2: Dynamic Programming.
-<Name>
-<Class>
-<Date>
+<Name> Trevor Wai
+<Class> Section 2
+<Date> 4/13/23
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
+from scipy import sparse
 
 
 def calc_stopping(N):
@@ -19,7 +21,17 @@ def calc_stopping(N):
         (float): The maximum expected value of choosing the best candidate.
         (int): The index of the maximum expected value.
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    Vt = 0
+
+    for i in reversed(range(1, N+1)):
+        #Calculate expected value
+        Vt1 = max(Vt * (i-1) / i + 1/N, Vt)
+        #Stops when Finds optimal value
+        if Vt == Vt1:
+            break
+        Vt = Vt1
+
+    return Vt1, i
 
 
 # Problem 2
@@ -33,7 +45,28 @@ def graph_stopping_times(M):
     Returns:
         (float): The optimal stopping percent of candidates for M.
     """
-    raise NotImplementedError("Problem 2 Incomplete")
+    optimal = np.array([calc_stopping(3)])
+
+    #Find the optimal stoping percentages and max probability
+    for i in range(4, M+1):
+        optimal = np.concatenate((optimal, np.array([calc_stopping(i)])), axis=0)
+
+    domain = range(3, M+1)
+    #Graph the optimal stopping percentage of candidates and max probability
+    plt.plot(domain, optimal[:,0], label='Max Probability')
+    plt.plot(domain, optimal[:,1] / np.arange(3, M+1), label='Optimal Stopping Percentage')
+
+    plt.title('Optimal Stopping Percentages of Candidates and Max Probability')
+    plt.xlabel('N')
+    plt.ylabel('Percent')
+
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+    #Optimal Stopping Percentage
+    return calc_stopping(M)[1]/M
+    
 
 
 # Problem 3
@@ -48,7 +81,9 @@ def get_consumption(N, u=lambda x: np.sqrt(x)):
     Returns:
         C ((N+1,N+1) ndarray): The consumption matrix.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    #Create the consumption matrix for the given parameters
+    w = u(np.arange(N+1) / N)
+    return sparse.diags(w, -np.arange(N+1), shape=(N+1, N+1)).toarray()
 
 
 # Problems 4-6
@@ -68,7 +103,24 @@ def eat_cake(T, N, B, u=lambda x: np.sqrt(x)):
         P ((N+1,T+1) ndarray): The matrix where the (ij)th entry is the
             number of pieces to consume given i pieces at time j.
     """
-    raise NotImplementedError("Problems 4-6 Incomplete")
+    C = get_consumption(N,u)
+    w = np.arange(N+1) / N
+    mask = (C > 0) + np.eye(N+1)
+    #Value Matrix
+    A = np.zeros((N+1, T+1))
+    A[:,-1] = u(w)
+    #Policy Matrix
+    P = np.zeros((N+1, T+1))
+    P[:,-1] = w
+
+    #Create Value and Policy Matrices
+    for i in range(2, T+2):
+        CV = (B * A[:,-i+1] + C) * mask
+        A[:,-i] = np.max(CV, axis=1)
+        P[:,-i] = w - w[np.argmax(CV, axis=1)]
+
+    return A, P
+
 
 
 # Problem 7
@@ -87,4 +139,13 @@ def find_policy(T, N, B, u=np.sqrt):
         ((T,) ndarray): The matrix describing the optimal percentage to
             consume at each time.
     """
-    raise NotImplementedError("Problem 7 Incomplete")
+    P = eat_cake(T, N, B, u)[1]
+    T = []
+    i = N
+
+    #Find the most optimal path to take
+    for j in range(N):
+        T.append(P[i,j])
+        i -= round(P[i,j] * N)
+
+    return np.array(T)
